@@ -127,8 +127,8 @@ const defaultDirectives = {
   ],
   scriptSrcElem: [
     self,
-    // unsafeInline,
-    (req, res) => `'nonce-${res.locals.cspNonce}'`,
+    unsafeInline,
+    // (req, res) => `'nonce-${res.locals.cspNonce}'`,
     unsafeEval,
     'maps.googleapis.com',
     'api.mapbox.com',
