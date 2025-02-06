@@ -74,6 +74,7 @@ const defaultDirectives = {
     '*.youtube-nocookie.com',
     'https://bid.g.doubleclick.net',
     'https://td.doubleclick.net',
+    '*.googletagmanager.com',
   ],
   imgSrc: [
     self,
@@ -112,6 +113,21 @@ const defaultDirectives = {
   ],
   scriptSrc: [
     self,
+    (req, res) => `'nonce-${res.locals.cspNonce}'`,
+    unsafeEval,
+    'maps.googleapis.com',
+    'api.mapbox.com',
+    '*.googletagmanager.com',
+    '*.google-analytics.com',
+    'www.googleadservices.com',
+    '*.g.doubleclick.net',
+    'js.stripe.com',
+    // Plausible analytics
+    'plausible.io',
+  ],
+  scriptSrcElem: [
+    self,
+    // unsafeInline,
     (req, res) => `'nonce-${res.locals.cspNonce}'`,
     unsafeEval,
     'maps.googleapis.com',
