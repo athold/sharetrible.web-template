@@ -218,13 +218,13 @@ export const EditListingPhotosForm = props => {
             <div className={css.imagesFieldArray}>
               <FieldArray
                 name="images"
-                validate={composeValidators(
-                  nonEmptyArray(
-                    intl.formatMessage({
-                      id: 'EditListingPhotosForm.imageRequired',
-                    })
-                  )
-                )}
+              // validate={composeValidators(
+              //   nonEmptyArray(
+              //     intl.formatMessage({
+              //       id: 'EditListingPhotosForm.imageRequired',
+              //     })
+              //   )
+              // )}
               >
                 {({ fields }) =>
                   fields.map((name, index) => (
