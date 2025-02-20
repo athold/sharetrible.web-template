@@ -12,3 +12,15 @@
   justify-content: center;
   align-items: center;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: center; /* Centruoja horizontaliai */
+  align-items: center; /* Centruoja vertikaliai (jei reikia) */
+}
+
+.buttonContainer button {
+  display: inline-block;
+  width: auto; /* Plotis tiek, kiek užima tekstas */
+  padding: 10px 20px; /* Jei reikia papildomos erdvės aplink tekstą */
+}

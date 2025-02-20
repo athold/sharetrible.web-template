@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import Field, { hasDataInFields } from '../../Field';
 
 import SectionContainer from '../SectionContainer';
 import css from './SectionHero.module.css';
+import { Button } from '../../../../components';
+import CompanyValuationModal from './CompanyValuationModal';
 
 /**
  * @typedef {Object} FieldComponentConfig
@@ -55,6 +57,12 @@ const SectionHero = props => {
 
   const hasHeaderFields = hasDataInFields([title, description, callToAction], fieldOptions);
 
+  // Modal valdymas
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
   return (
     <SectionContainer
       id={sectionId}
@@ -68,8 +76,15 @@ const SectionHero = props => {
           <Field data={title} className={defaultClasses.title} options={fieldOptions} />
           <Field data={description} className={defaultClasses.description} options={fieldOptions} />
           <Field data={callToAction} className={defaultClasses.ctaButton} options={fieldOptions} />
+
+           {/* Mygtukas modalui atidaryti */}
+           <div className={css.buttonContainer}>
+            <Button onClick={handleOpenModal}>Gaukite nemokamą verslo vertinimą</Button>
+            </div>
         </header>
       ) : null}
+        {/* Modalas */}
+        <CompanyValuationModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </SectionContainer>
   );
 };
