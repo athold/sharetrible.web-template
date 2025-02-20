@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Naudojam tą patį Dockerfile, kaip produkcijoje
+    working_dir: /home/node/app
+    user: root
+    volumes:
+      - .:/home/node/app  # Kad galėtum keisti failus lokaliai
+      - /home/node/app/node_modules  # Užtikrina, kad node_modules nesipainiotų
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"  # React dev server (jei reikalingas)
+      - "3500:3500"  # React dev server (jei reikalingas)
+    command: yarn run dev  # Čia perrašome `CMD`, kad paleistų dev aplinką
