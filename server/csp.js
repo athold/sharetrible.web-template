@@ -65,6 +65,9 @@ const defaultDirectives = {
     'sentry.io',
     '*.sentry.io',
     '*.stripe.com',
+
+    // API
+    'https://qdhiamibg6.execute-api.eu-west-1.amazonaws.com',
   ],
   fontSrc: [self, data, 'assets-sharetribecom.sharetribe.com', 'fonts.gstatic.com'],
   formAction: [self],
