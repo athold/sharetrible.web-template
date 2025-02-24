@@ -118,6 +118,7 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
             )}
             <p>
               <PrimaryButton
+                id="siusti"
                 type="submit"
                 inProgress={submitInProgress}
                 disabled={submitDisabled}
