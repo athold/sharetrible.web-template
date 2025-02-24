@@ -45,9 +45,11 @@ import {
   resolveLatestProcessName,
 } from '../../transactions/transaction';
 
-import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
+
+import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2, H3, H5 } from '../../components';
 
 import css from './OrderPanel.module.css';
+import { getCurrentScope } from '@sentry/browser';
 
 const BookingTimeForm = loadable(() =>
   import(/* webpackChunkName: "BookingTimeForm" */ './BookingTimeForm/BookingTimeForm')
@@ -127,6 +129,7 @@ const PriceMaybe = props => {
   const {
     price,
     publicData,
+    privateData,
     validListingTypes,
     intl,
     marketplaceCurrency,
@@ -155,7 +158,9 @@ const PriceMaybe = props => {
     </div>
   ) : (
     <div className={css.priceContainer}>
-      <p className={css.price}>{formatMoneyIfSupportedCurrency(price, intl)}</p>
+      {/* <p className={css.price}>{formatMoneyIfSupportedCurrency(price, intl)}</p> */}
+      {/* <p className={css.price}>Kaina</p> */}
+
       <div className={css.perUnit}>
         <FormattedMessage id="OrderPanel.perUnit" values={{ unitType }} />
       </div>
@@ -314,10 +319,30 @@ const OrderPanel = props => {
   const authorDisplayName = userDisplayNameAsString(author, '');
 
   const classes = classNames(rootClassName || css.root, className);
-  const titleClasses = classNames(titleClassName || css.orderTitle);
 
+  const titleClasses = classNames(titleClassName || css.orderTitle);
   return (
-    <div className={classes}>
+
+    <div className={classes} style={{ padding: '8px' }}>
+      <div className={css.myResponsiveContainer}>
+        <div className={css.myRow}>
+          <span className={css.myLabel}>Įmonės vertė:</span>
+          <span className={css.myValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+        </div>
+        <div className={css.myRow}>
+          <span className={css.myLabel}>Pelnas prieš mokesčius:</span>
+          <span className={css.myValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
       <ModalInMobile
         containerClassName={css.modalContainer}
         id="OrderFormInModal"
@@ -327,14 +352,22 @@ const OrderPanel = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
-        <div className={css.modalHeading}>
+
+
+        <div className={css.modalHeading} >
           <H1 className={css.heading}>{title}</H1>
         </div>
-
+        <h4 style={{ textAlign: 'center', borderBottom: '2px solid #000', padding: '5px' }}>
+          Susisiekti su pardavėju
+        </h4>
         <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+
+          {/* 
+          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>} */}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
+
+
 
         <PriceMaybe
           price={price}
@@ -343,16 +376,61 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
+        <div className={css.author} style={{ display: 'block' }}>
+          {/* <div style={{ display: 'block' }}>
+            <span className={css.providerNameLinked}>
+              <FormattedMessage
+                id="OrderPanel.author"
+                values={{
+                  name: `Vardas, Pavardė: ${authorLink.props.children || ''}`, // Use the correct property here
+                }}
+              />
+            </span>
+          </div>
 
-        <div className={css.author}>
-          <AvatarSmall user={author} className={css.providerAvatar} />
-          <span className={css.providerNameLinked}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
-          </span>
-          <span className={css.providerNamePlain}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
-          </span>
+
+          <div style={{ display: 'block' }}>
+            <span className={css.providerNamePlain}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
+            </span>
+          </div> */}
+
+
+
+          {/* Add telephone, email, and message under the name */}
+          <div style={{ display: 'block' }}>
+            <div style={{ display: 'block' }}>
+              <label style={{ display: 'block', paddingBottom: '2px' }}>
+                <FormattedMessage id="OrderPanel.name" defaultMessage="Vardas, Pavardė" />:
+              </label>
+              <input type="text" defaultValue={author?.attributes?.name || ''} />
+            </div>
+            <div style={{ display: 'block' }}>
+              <label style={{ display: 'block', paddingBottom: '2px' }}>
+                <FormattedMessage id="OrderPanel.telephone" defaultMessage="Telefonas" />:
+              </label>
+              <input type="text" defaultValue={author?.attributes?.phone || ''} />
+            </div>
+            <div style={{ display: 'block' }}>
+              <label style={{ display: 'block', paddingBottom: '2px' }}>
+                <FormattedMessage id="OrderPanel.email" defaultMessage="El.paštas" />:
+              </label>
+              <input type="email" defaultValue={author?.attributes?.email || ''} />
+            </div>
+            <div style={{ display: 'block' }}>
+              <label style={{ display: 'block', paddingBottom: '2px' }}>
+                <FormattedMessage id="OrderPanel.message" defaultMessage="Žinutė" />:
+              </label>
+              <textarea defaultValue={author?.attributes?.message || ''}></textarea>
+            </div>
+          </div>
+
+
         </div>
+
+
+
+
 
         {showPriceMissing ? (
           <PriceMissing />
@@ -470,7 +548,26 @@ const OrderPanel = props => {
             )}
           </PrimaryButton>
         )}
+
       </div>
+      <div className={css.myAuthorContainer}>
+        <FormattedMessage
+          id="OrderPanel.author"
+          values={{
+            name: `Skelbimą įkėlė: ${authorLink.props.children || ''}`,
+          }}
+        />
+        <br />
+        {props.author.attributes.profile.metadata.approvedUser === 'approved' && (
+          <span className={css.myApprovedUserBadge}>
+            Tapatybė patvirtinta
+          </span>
+        )}
+      </div>
+
+
+
+
     </div>
   );
 };
