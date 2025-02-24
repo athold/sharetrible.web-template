@@ -1,0 +1,31 @@
+.modalTitle {
+  color: black !important; /* Užtikriname, kad spalva būtų juoda */
+  /* font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem; */
+}
+
+.error {
+  color: var(--colorFail) !important; /* Naudojama globali spalva klaidoms */
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: bold; /* Klaidos tekstas aiškesnis */
+  display: block; /* Užtikrina, kad tekstas visada matomas */
+}
+
+.error ul {
+  padding-left: 16px;
+  margin: 4px 0;
+  list-style-type: disc; /* Padaro sąrašą aiškesnį */
+  color: var(--colorFail) !important; /* Naudojama globali spalva klaidoms */
+}
+
+.error li {
+  margin: 2px 0;
+  font-size: 12px; /* Jei klaidos rodomos sąraše, jos bus mažesnės */
+  color: var(--colorFail) !important; /* Naudojama globali spalva klaidoms */
+}
+
+.successMessage p {
+  color: var(--colorGrey700) !important; /* Naudojama globali spalva sėkmės pranešimams */
+}
