@@ -216,7 +216,7 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
 
   const params = {
     id: listingId,
-    include: ['author', 'author.profileImage', 'images', 'currentStock'],
+    include: ['author', 'author.profileImage', 'currentStock'],
     'fields.image': [
       // Scaled variants for large images
       'variants.scaled-small',
@@ -411,9 +411,9 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   const hasNoViewingRights = currentUser && !hasPermissionToViewData(currentUser);
   const promises = hasNoViewingRights
     ? // If user has no viewing rights, only allow fetching their own listing without reviews
-      [dispatch(showListing(listingId, config, true))]
+    [dispatch(showListing(listingId, config, true))]
     : // For users with viewing rights, fetch the listing and the associated reviews
-      [dispatch(showListing(listingId, config)), dispatch(fetchReviews(listingId))];
+    [dispatch(showListing(listingId, config)), dispatch(fetchReviews(listingId))];
 
   return Promise.all(promises).then(response => {
     const listingResponse = response[0];
