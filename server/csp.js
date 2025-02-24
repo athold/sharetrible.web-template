@@ -67,7 +67,7 @@ const defaultDirectives = {
     '*.stripe.com',
 
     // API
-    'https://qdhiamibg6.execute-api.eu-west-1.amazonaws.com',
+    '*.kapitalistai.lt',
   ],
   fontSrc: [self, data, 'assets-sharetribecom.sharetribe.com', 'fonts.gstatic.com'],
   formAction: [self],

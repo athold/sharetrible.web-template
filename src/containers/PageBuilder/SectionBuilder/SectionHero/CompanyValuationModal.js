@@ -146,7 +146,7 @@ const CompanyValuationModal = ({ isOpen, onClose }) => {
     console.log('Formos pateikimas prasideda...');
   
     try {
-      const response = await fetch("https://qdhiamibg6.execute-api.eu-west-1.amazonaws.com/prod/web/company-valuation-request", {
+      const response = await fetch("https://api.kapitalistai.lt/web/company-valuation-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
