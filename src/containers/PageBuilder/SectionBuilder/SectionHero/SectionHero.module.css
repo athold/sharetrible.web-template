@@ -23,4 +23,6 @@
   display: inline-block;
   width: auto; /* Plotis tiek, kiek užima tekstas */
   padding: 10px 20px; /* Jei reikia papildomos erdvės aplink tekstą */
+  min-height: 42px;
+  font-size: 15px;
 }
