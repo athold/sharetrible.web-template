@@ -102,7 +102,7 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
               <FieldCheckbox
                   name="agreeToEmails"
                   id="agreeToEmails"
-                  label="Sutinku su laiškais"
+                  label="Sutinku gauti el. laiškus iš Kapitalistai.lt"
                   validate={requiredCheckbox()}
               />
             </p>
