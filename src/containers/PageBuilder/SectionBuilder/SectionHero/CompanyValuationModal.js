@@ -9,7 +9,7 @@ import css from './CompanyValuationModal.module.css';
 // Template of success message after successful form submission
 const SuccessMessage = ({ onClose }) => (
   <div className={css.successMessage}>
-    <p>Jūsų užklausa sėkmingai išsiųsta! Įvertinimą gausite nurodytu el.paštu.</p>
+    <p id="uzklausa">Jūsų užklausa sėkmingai išsiųsta! Įvertinimą gausite nurodytu el.paštu.</p>
     <PrimaryButton onClick={onClose}>Uždaryti</PrimaryButton>
   </div>
 );
@@ -22,17 +22,17 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
 
   const validateLithuanianPhone = message => value => {
     if (!value) return message; // Patikrina, ar nėra tuščias
-      const lithuanianPhoneRegex = /^(\+370)6\d{7}$/;
+    const lithuanianPhoneRegex = /^(\+370)6\d{7}$/;
     return lithuanianPhoneRegex.test(value) ? undefined : message;
   };
 
   const requiredCheckbox = () => value => !value;
-  
+
   return (
     <FinalForm
       onSubmit={(values) => handleSubmitForm(values, onClose)}
 
-      render={({ handleSubmit, submitting, invalid, submitError, form}) => {
+      render={({ handleSubmit, submitting, invalid, submitError, form }) => {
         const submitInProgress = submitting;
         const hasFieldErrors = Object.keys(form.getState().errors).length > 0;
         const submitDisabled = hasFieldErrors || submitInProgress;
@@ -76,7 +76,7 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
               autoComplete="email"
               label="El. paštas"
               validate={validators.composeValidators(
-                validators.required('El. paštas yra privalomas.'), 
+                validators.required('El. paštas yra privalomas.'),
                 validators.emailFormatValid('Netinkamas el. pašto formatas.')
               )}
             />
@@ -94,32 +94,32 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
             />
             <p>
               <FieldCheckbox
-                  name="isShareholder"
-                  id="isShareholder"
-                  label="Aš esu įmonės akcininkas"
-                  validate={requiredCheckbox()}
+                name="isShareholder"
+                id="isShareholder"
+                label="Aš esu įmonės akcininkas"
+                validate={requiredCheckbox()}
               />
               <FieldCheckbox
-                  name="agreeToEmails"
-                  id="agreeToEmails"
-                  label="Sutinku gauti el. laiškus iš Kapitalistai.lt"
-                  validate={requiredCheckbox()}
+                name="agreeToEmails"
+                id="agreeToEmails"
+                label="Sutinku gauti el. laiškus iš Kapitalistai.lt"
+                validate={requiredCheckbox()}
               />
             </p>
 
             {submitError && (
               <div className={css.error}>
                 <ul>
-                  {Array.isArray(submitError) 
-                    ? submitError.map((error, index) => <li key={index}>{error}</li>) 
+                  {Array.isArray(submitError)
+                    ? submitError.map((error, index) => <li key={index}>{error}</li>)
                     : <li>{submitError}</li>}
                 </ul>
               </div>
             )}
             <p>
-              <PrimaryButton 
-                type="submit" 
-                inProgress={submitInProgress} 
+              <PrimaryButton
+                type="submit"
+                inProgress={submitInProgress}
                 disabled={submitDisabled}
               >
                 Siųsti
@@ -144,14 +144,14 @@ const CompanyValuationModal = ({ isOpen, onClose }) => {
   const handleSubmitForm = async (values, onClose) => {
     let errorList = [];
     console.log('Formos pateikimas prasideda...');
-  
+
     try {
       const response = await fetch("https://api.kapitalistai.lt/web/company-valuation-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-  
+
       const data = await response.json();
 
       if (data.statusCode === 400) {
@@ -160,16 +160,16 @@ const CompanyValuationModal = ({ isOpen, onClose }) => {
           errorList.push(errors[key]);
         }
       }
-      
+
       if (errorList.length > 0) {
-        return {[FORM_ERROR]: errorList};
-      }      
-      
+        return { [FORM_ERROR]: errorList };
+      }
+
       setIsSuccess(true);
     } catch (error) {
       console.error("Įvyko klaida siunčiant duomenis:", error);
-      return { 
-        [FORM_ERROR]: "Nepavyko prisijungti prie serverio. Bandykite vėliau." 
+      return {
+        [FORM_ERROR]: "Nepavyko prisijungti prie serverio. Bandykite vėliau."
       };
     }
   };
@@ -185,5 +185,5 @@ const CompanyValuationModal = ({ isOpen, onClose }) => {
     </Modal>
   );
 }
-  
+
 export default CompanyValuationModal;
