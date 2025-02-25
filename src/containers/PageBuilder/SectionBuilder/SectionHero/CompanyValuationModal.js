@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import * as validators from '../../../../util/validators';
@@ -136,6 +136,24 @@ const ValuationForm = ({ handleSubmitForm, onClose }) => {
 const CompanyValuationModal = ({ isOpen, onClose }) => {
 
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isSuccess) {
+      // Dispatch a fake click event
+      const successMessage = document.getElementById("uzklausa");
+      if (successMessage) {
+        const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+        successMessage.dispatchEvent(event);
+      }
+
+      // Push event to GTM
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "modalSuccess" });
+    }
+  }, [isSuccess]);
+
+
+
 
   const onManageDisableScrolling = (id, shouldDisable) => {
     document.body.style.overflow = shouldDisable ? 'hidden' : 'auto';
