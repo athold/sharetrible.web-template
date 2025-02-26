@@ -241,6 +241,10 @@ const FieldSelectCategory = props => {
   );
 };
 
+const requiredAndNonEmptyString11 = message => value => {
+  return value === 200 ? VALID : message;
+};
+
 // Add collect data for listing fields (both publicData and privateData) based on configuration
 const AddListingFields = props => {
   const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
@@ -255,22 +259,25 @@ const AddListingFields = props => {
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
 
+
+
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
       ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
-        ]
+        ...pickedFields,
+        <CustomExtendedDataField
+          key={namespacedKey}
+          name={namespacedKey}
+          fieldConfig={fieldConfig}
+          shouldDisable={namespacedKey === 'pub_imonesKodas' || namespacedKey === 'pub_akciju_dalis' ? false : true}
+          defaultRequiredMessage={intl.formatMessage({
+            id: 'EditListingDetailsForm.defaultRequiredMessage',
+          })}
+          formId={formId}
+        />,
+      ]
       : pickedFields;
   }, []);
-
+  //requiredAndNonEmptyString11
   return <>{fields}</>;
 };
 
@@ -333,6 +340,34 @@ const EditListingDetailsForm = props => (
         values,
       } = formRenderProps;
 
+      useEffect(() => {
+        if (!values?.pub_imonesKodas) return;
+
+        const fetchCompanyData = async () => {
+          try {
+            const response = await fetch(
+              `https://api.kapitalistai.lt/web/company/getData?companyCode=${values.pub_imonesKodas}`
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              formApi.batch(() => {
+                formApi.change("pub_darbuotoju", Number(data?.body?.companyData?.data?.employeesActual?.employees));
+                formApi.change("pub_metines_pajamos", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
+                formApi.change("pub_teisine_forma", data?.body?.companyData?.data?.legalForm?.formName?.toString());
+                formApi.change("pub_pelnas", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
+              });
+            }
+          } catch (error) {
+            console.error("Error during API call:", error);
+          }
+        };
+
+        fetchCompanyData();
+      }, [values.pub_imonesKodas]); // **Minimized dependencies to avoid unnecessary re-renders**
+
+
+
       const intl = useIntl();
       const { listingType, transactionProcessAlias, unitType } = values;
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
@@ -373,6 +408,8 @@ const EditListingDetailsForm = props => (
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const hasMandatoryListingTypeData = listingType && transactionProcessAlias && unitType;
+
+
       const submitDisabled =
         invalid ||
         disabled ||
