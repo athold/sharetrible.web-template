@@ -539,19 +539,20 @@ class EditListingWizard extends Component {
 
     // If selectedTab is not active for listing with valid listing type,
     // redirect to the beginning of wizard
-    if (!invalidExistingListingType && !tabsStatus[selectedTab] && !params.tab === 'location') {
-      const currentTabIndex = tabs.indexOf(selectedTab);
-      const nearestActiveTab = tabs
-        .slice(0, currentTabIndex)
-        .reverse()
-        .find(t => tabsStatus[t]);
+    if (!params.tab === "location") {
+      if (!invalidExistingListingType && !tabsStatus[selectedTab]) {
+        const currentTabIndex = tabs.indexOf(selectedTab);
+        const nearestActiveTab = tabs
+          .slice(0, currentTabIndex)
+          .reverse()
+          .find(t => tabsStatus[t]);
 
-      console.log(
-        `You tried to access an EditListingWizard tab (${selectedTab}), which was not yet activated.`
-      );
-      return <NamedRedirect name="EditListingPage" params={{ ...params, tab: nearestActiveTab }} />;
+        console.log(
+          `You tried to access an EditListingWizard tab (${selectedTab}), which was not yet activated.`
+        );
+        return <NamedRedirect name="EditListingPage" params={{ ...params, tab: nearestActiveTab }} />;
+      }
     }
-
     const isBrowser = typeof window !== 'undefined';
     const hasMatchMedia = isBrowser && window?.matchMedia;
     const isMobileLayout = hasMatchMedia
