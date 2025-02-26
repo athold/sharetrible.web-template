@@ -84,7 +84,7 @@ const CustomFieldMultiEnum = props => {
 };
 
 const CustomFieldText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, shouldDisable = false } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig);
   const validateMaybe = isRequired
@@ -100,6 +100,7 @@ const CustomFieldText = props => {
       name={name}
       type="textarea"
       label={label}
+      disabled={shouldDisable}
       placeholder={placeholder}
       {...validateMaybe}
     />
@@ -107,7 +108,7 @@ const CustomFieldText = props => {
 };
 
 const CustomFieldLong = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, shouldDisable = false } = props;
   const { minimum, maximum, saveConfig } = fieldConfig;
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig);
@@ -142,8 +143,10 @@ const CustomFieldLong = props => {
         return Number.isNaN(parsed) ? null : parsed;
       }}
       label={label}
+      disabled={shouldDisable}
       placeholder={placeholder}
       validate={value => validate(value, minimum, maximum)}
+
       onWheel={e => {
         // fix: number input should not change value on scroll
         if (e.target === document.activeElement) {
@@ -232,16 +235,16 @@ const CustomExtendedDataField = props => {
   return schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
     : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
-    ? renderFieldComponent(CustomFieldMultiEnum, props)
-    : schemaType === SCHEMA_TYPE_TEXT
-    ? renderFieldComponent(CustomFieldText, props)
-    : schemaType === SCHEMA_TYPE_LONG
-    ? renderFieldComponent(CustomFieldLong, props)
-    : schemaType === SCHEMA_TYPE_BOOLEAN
-    ? renderFieldComponent(CustomFieldBoolean, props)
-    : schemaType === SCHEMA_TYPE_YOUTUBE
-    ? renderFieldComponent(CustomFieldYoutube, props)
-    : null;
+      ? renderFieldComponent(CustomFieldMultiEnum, props)
+      : schemaType === SCHEMA_TYPE_TEXT
+        ? renderFieldComponent(CustomFieldText, props)
+        : schemaType === SCHEMA_TYPE_LONG
+          ? renderFieldComponent(CustomFieldLong, props)
+          : schemaType === SCHEMA_TYPE_BOOLEAN
+            ? renderFieldComponent(CustomFieldBoolean, props)
+            : schemaType === SCHEMA_TYPE_YOUTUBE
+              ? renderFieldComponent(CustomFieldYoutube, props)
+              : null;
 };
 
 export default CustomExtendedDataField;
