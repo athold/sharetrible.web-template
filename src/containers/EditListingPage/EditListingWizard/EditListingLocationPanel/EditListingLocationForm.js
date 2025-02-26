@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
 
@@ -45,105 +45,141 @@ const identity = v => v;
  * @param {propTypes.error} props.errors.updateListingError - The update listing error
  * @returns {JSX.Element}
  */
-export const EditListingLocationForm = props => (
-  <FinalForm
-    {...props}
-    render={formRenderProps => {
-      const {
-        formId = 'EditListingLocationForm',
-        autoFocus,
-        className,
-        rootClassName,
-        disabled,
-        ready,
-        handleSubmit,
-        invalid,
-        pristine,
-        saveActionMsg,
-        updated,
-        updateInProgress = false,
-        fetchErrors,
-        values,
-      } = formRenderProps;
+export const EditListingLocationForm = ({ publicData, ...props }) => {
+  const [address, setAddress] = React.useState(null);
 
-      const intl = useIntl();
-      const addressRequiredMessage = intl.formatMessage({
-        id: 'EditListingLocationForm.addressRequired',
-      });
-      const addressNotRecognizedMessage = intl.formatMessage({
-        id: 'EditListingLocationForm.addressNotRecognized',
-      });
+  useEffect(() => {
+    const fetchAddressData = async () => {
+      if (publicData?.imonesKodas) {
+        console.log('Fetching company data for:', publicData.imonesKodas);
 
-      const optionalText = intl.formatMessage({
-        id: 'EditListingLocationForm.optionalText',
-      });
+        try {
+          const response = await fetch(
+            `https://api.kapitalistai.lt/web/company/getData?companyCode=${publicData.imonesKodas}`
+          );
 
-      const { updateListingError, showListingsError } = fetchErrors || {};
+          console.log('API Response:', response);
 
-      const classes = classNames(rootClassName || css.root, className);
-      const submitReady = (updated && pristine) || ready;
-      const submitInProgress = updateInProgress;
-      const submitDisabled = invalid || disabled || submitInProgress;
+          if (response.ok) {
+            const data = await response.json();
+            console.log('API Data:', data);
 
-      return (
-        <Form className={classes} onSubmit={handleSubmit}>
-          {updateListingError ? (
-            <p className={css.error}>
-              <FormattedMessage id="EditListingLocationForm.updateFailed" />
-            </p>
-          ) : null}
+            const fullTextAddress = data?.body?.companyData?.data?.registrationAddress?.fullTextAddress;
+            if (fullTextAddress) {
+              console.log('Fetched Address:', fullTextAddress);
+              setAddress(fullTextAddress); // Set the fetched address
+            } else {
+              console.log('No address found in the API response');
+            }
+          } else {
+            console.log('API request failed with status:', response.status);
+          }
+        } catch (error) {
+          console.error('Error during API call:', error);
+        }
+      } else {
+        console.log('No company code found in publicData');
+      }
+    };
 
-          {showListingsError ? (
-            <p className={css.error}>
-              <FormattedMessage id="EditListingLocationForm.showListingFailed" />
-            </p>
-          ) : null}
+    fetchAddressData();
+  }, [publicData?.imonesKodas]);
 
-          <FieldLocationAutocompleteInput
-            rootClassName={css.locationAddress}
-            inputClassName={css.locationAutocompleteInput}
-            iconClassName={css.locationAutocompleteInputIcon}
-            predictionsClassName={css.predictionsRoot}
-            validClassName={css.validLocation}
-            autoFocus={autoFocus}
-            name="location"
-            label={intl.formatMessage({ id: 'EditListingLocationForm.address' })}
-            placeholder={intl.formatMessage({
-              id: 'EditListingLocationForm.addressPlaceholder',
-            })}
-            useDefaultPredictions={false}
-            format={identity}
-            valueFromForm={values.location}
-            validate={composeValidators(
-              autocompleteSearchRequired(addressRequiredMessage),
-              autocompletePlaceSelected(addressNotRecognizedMessage)
-            )}
-          />
+  return (
+    <FinalForm
+      {...props}
+      render={formRenderProps => {
+        const {
+          formId = 'EditListingLocationForm',
+          autoFocus,
+          className,
+          rootClassName,
+          disabled,
+          ready,
+          handleSubmit,
+          invalid,
+          pristine,
+          saveActionMsg,
+          updated,
+          updateInProgress = false,
+          fetchErrors,
+          values,
+        } = formRenderProps;
 
-          <FieldTextInput
-            className={css.building}
-            type="text"
-            name="building"
-            id={`${formId}building`}
-            label={intl.formatMessage({ id: 'EditListingLocationForm.building' }, { optionalText })}
-            placeholder={intl.formatMessage({
-              id: 'EditListingLocationForm.buildingPlaceholder',
-            })}
-          />
+        const intl = useIntl();
+        const addressRequiredMessage = intl.formatMessage({
+          id: 'EditListingLocationForm.addressRequired',
+        });
 
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-            ready={submitReady}
-          >
-            {saveActionMsg}
-          </Button>
-        </Form>
-      );
-    }}
-  />
-);
+        const { updateListingError, showListingsError } = fetchErrors || {};
+
+        const classes = classNames(rootClassName || css.root, className);
+        const submitReady = (updated && pristine) || ready;
+        const submitInProgress = updateInProgress;
+        const submitDisabled = invalid || disabled || submitInProgress;
+
+        // Default to fetched address if available
+        const location = publicData?.location || {};
+        const { building } = location;
+
+        return (
+          <Form className={classes} onSubmit={handleSubmit}>
+            {updateListingError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingLocationForm.updateFailed" />
+              </p>
+            ) : null}
+
+            {showListingsError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingLocationForm.showListingFailed" />
+              </p>
+            ) : null}
+
+            <FieldLocationAutocompleteInput
+              rootClassName={css.locationAddress}
+              inputClassName={css.locationAutocompleteInput}
+              iconClassName={css.locationAutocompleteInputIcon}
+              predictionsClassName={css.predictionsRoot}
+              validClassName={css.validLocation}
+              autoFocus={autoFocus}
+              name="location"
+              label={intl.formatMessage({ id: 'EditListingLocationForm.address' })}
+              placeholder={intl.formatMessage({
+                id: 'EditListingLocationForm.addressPlaceholder',
+              })}
+              useDefaultPredictions={false}
+              format={identity}
+              // Use the fetched address or the existing one from publicData
+              valueFromForm={values.location || { search: address || location.search || '' }}
+            />
+
+            {/* <FieldTextInput
+              className={css.building}
+              type="text"
+              name="building"
+              id={`${formId}building`}
+              label={intl.formatMessage({ id: 'EditListingLocationForm.building' })}
+              placeholder={intl.formatMessage({
+                id: 'EditListingLocationForm.buildingPlaceholder',
+              })}
+              value={values.building || building} // Default to building if it's missing
+            /> */}
+
+            <Button
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+              ready={submitReady}
+            >
+              {saveActionMsg}
+            </Button>
+          </Form>
+        );
+      }}
+    />
+  );
+};
 
 export default EditListingLocationForm;

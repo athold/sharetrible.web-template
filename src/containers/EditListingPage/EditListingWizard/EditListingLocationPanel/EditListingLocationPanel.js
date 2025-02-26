@@ -21,14 +21,14 @@ const getInitialValues = props => {
   const locationFieldsPresent = publicData?.location?.address && geolocation;
   const location = publicData?.location || {};
   const { address, building } = location;
-
+  // console.log(publicData);
   return {
     building,
     location: locationFieldsPresent
       ? {
-          search: address,
-          selectedPlace: { address, origin: geolocation },
-        }
+        search: address,
+        selectedPlace: { address, origin: geolocation },
+      }
       : null,
   };
 };
@@ -65,6 +65,7 @@ const EditListingLocationPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    publicData,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -88,30 +89,30 @@ const EditListingLocationPanel = props => {
       <EditListingLocationForm
         className={css.form}
         initialValues={state.initialValues}
+        publicData={listing?.attributes?.publicData}
         onSubmit={values => {
           const { building = '', location } = values;
-          const {
-            selectedPlace: { address, origin },
-          } = location;
+          const { address, origin } = location?.selectedPlace || {};  // If no selectedPlace, use the address
 
-          // New values for listing attributes
+          // Update values, even if the address is not from Google
           const updateValues = {
-            geolocation: origin,
+            geolocation: origin || null,  // Origin is optional, can be null
             publicData: {
-              location: { address, building },
+              location: { address: location?.search || address, building },
             },
           };
+
           // Save the initialValues to state
-          // LocationAutocompleteInput doesn't have internal state
-          // and therefore re-rendering would overwrite the values during XHR call.
           setState({
             initialValues: {
               building,
-              location: { search: address, selectedPlace: { address, origin } },
+              location: { search: address || location?.search, selectedPlace: { address, origin } },
             },
           });
-          onSubmit(updateValues);
+
+          onSubmit(updateValues);  // Pass updated values to the parent
         }}
+
         saveActionMsg={submitButtonText}
         disabled={disabled}
         ready={ready}
