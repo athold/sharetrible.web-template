@@ -117,10 +117,10 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const searchValidListingTypes = listingTypes => {
     return config.listing.enforceValidListingType
       ? {
-          pub_listingType: listingTypes.map(l => l.listingType),
-          // pub_transactionProcessAlias: listingTypes.map(l => l.transactionType.alias),
-          // pub_unitType: listingTypes.map(l => l.transactionType.unitType),
-        }
+        pub_listingType: listingTypes.map(l => l.listingType),
+        // pub_transactionProcessAlias: listingTypes.map(l => l.transactionType.alias),
+        // pub_unitType: listingTypes.map(l => l.transactionType.unitType),
+      }
       : {};
   };
 
@@ -137,12 +137,12 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       const subcategories = foundCategory?.subcategories || [];
       return foundCategory && subcategories.length > 0
         ? {
-            [levelKey]: levelValue,
-            ...validURLParamForCategoryData(prefix, subcategories, level + 1, params),
-          }
+          [levelKey]: levelValue,
+          ...validURLParamForCategoryData(prefix, subcategories, level + 1, params),
+        }
         : foundCategory
-        ? { [levelKey]: levelValue }
-        : {};
+          ? { [levelKey]: levelValue }
+          : {};
     };
 
     const categoryKeys = validURLParamForCategoryData(prefix, categories, 1, params);
@@ -159,8 +159,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     const values = priceParam ? priceParam.split(',') : [];
     return priceParam && values.length === 2
       ? {
-          price: [inSubunits(values[0]), inSubunits(values[1]) + 1].join(','),
-        }
+        price: [inSubunits(values[0]), inSubunits(values[1]) + 1].join(','),
+      }
       : {};
   };
 
@@ -191,8 +191,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       hasValues && isNightlyMode
         ? endRaw
         : hasValues
-        ? getExclusiveEndDate(endRaw, searchTZ)
-        : null;
+          ? getExclusiveEndDate(endRaw, searchTZ)
+          : null;
 
     const today = getStartOf(new Date(), 'day', searchTZ);
     const possibleStartDate = subtractTime(today, 14, 'hours', searchTZ);
@@ -212,14 +212,14 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     const minDuration = isEntireRangeAvailable ? dayCount * day - hour : hour;
     return hasValidDates
       ? {
-          start: getProlongedStart(startDate),
-          end: getProlongedEnd(endDate),
-          // Availability can be time-full or time-partial.
-          // However, due to prolonged time window, we need to use time-partial.
-          availability: 'time-partial',
-          // minDuration uses minutes
-          minDuration,
-        }
+        start: getProlongedStart(startDate),
+        end: getProlongedEnd(endDate),
+        // Availability can be time-full or time-partial.
+        // However, due to prolonged time window, we need to use time-partial.
+        availability: 'time-partial',
+        // minDuration uses minutes
+        minDuration,
+      }
       : {};
   };
 
@@ -306,7 +306,6 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
 
   const { page = 1, address, origin, ...rest } = queryParams;
   const originMaybe = isOriginInUse(config) && origin ? { origin } : {};
-
   const {
     aspectWidth = 1,
     aspectHeight = 1,
@@ -327,9 +326,12 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'price',
         'deleted',
         'state',
+        'description',
         'publicData.listingType',
         'publicData.transactionProcessAlias',
         'publicData.unitType',
+        'publicData.metines_pajamos',
+        'publicData.pelnas',
         // These help rendering of 'purchase' listings,
         // when transitioning from search page to listing page
         'publicData.pickupEnabled',
