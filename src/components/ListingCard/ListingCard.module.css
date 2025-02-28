@@ -13,8 +13,11 @@
 
 .aspectRatioWrapper {
   transition: var(--transitionStyleButton);
-  background: var(--colorGrey100); /* Loading BG color */
   border-radius: var(--borderRadiusMedium);
+  height: 25vh; /* Limit height to 50% of the viewport */
+  overflow: hidden; /* Ensures content doesn’t overflow */
+  border: 1px solid var(--colorGrey100); /* Adds a border around the card */
+
 
   @media (--viewportMedium) {
     &:hover {
@@ -23,6 +26,7 @@
     }
   }
 }
+
 
 .rootForImage {
   border: solid 1px var(--colorGrey100);
@@ -44,7 +48,6 @@
   flex-direction: row;
   justify-content: flex-start;
   flex-shrink: 0;
-  margin-bottom: 4px;
 }
 
 .priceValue {
@@ -93,6 +96,8 @@
   font-weight: var(--fontWeightBold);
   color: var(--colorGrey700);
   margin: 0;
+  font-size: 1.45em;  /* Equivalent to h3 font size */
+  line-height: 1.4;
 }
 
 .authorInfo {
@@ -121,3 +126,191 @@
   word-break: break-word;
   hyphens: auto;
 }
+
+.myContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Space between elements in relative units */
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0rem 1.5rem; /* Use rem or em for better responsiveness */
+}
+
+
+
+.priceWrapper {
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.priceValue {
+  font-size: 1.45em;  /* Ensure price also matches the title size */
+}
+
+.wordContainer {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  width: 100%;
+  padding: 8px 24px 24px 24px;
+  color: var(--colorGrey700);
+  box-sizing: border-box;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.label {
+  flex: 0 0 11%;
+}
+
+.value {
+  flex: 0 0 89%;
+  text-align: left;
+}
+
+.rightColumn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.redSquare {
+  background-color: var(--colorPrimaryButton);
+  width: 100%;
+  height: 100%;
+  grid-row: span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--borderRadiusMedium);
+  box-sizing: border-box;
+}
+
+.centeredText {
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  padding: 0 10px;
+}
+
+@media (max-width: 768px) {
+  .redSquare {
+    height: auto;
+    grid-row: auto;
+  }
+
+  .centeredText {
+    font-size: 0.9rem;
+  }
+
+  .wordContainer {
+    padding: 8px 16px 16px 16px;
+  }
+
+  .fullWidth {
+    -webkit-line-clamp: 3;
+  }
+
+  .word {
+    flex-direction: column;
+  }
+
+  .label {
+    flex: 0 0 100%;
+  }
+
+  .value {
+    flex: 0 0 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .label, .value {
+    flex: 1 1 auto; /* Allow label and value to adjust to available space */
+  }
+
+  .redSquare {
+    padding: 10px;
+  }
+
+  .centeredText {
+    font-size: 0.8rem;
+  }
+
+  .wordContainer {
+    padding: 8px 12px 12px 12px;
+  }
+
+  .myContainer {
+    padding: 12px 12px 0px 12px;
+  }
+
+  @media (max-width: 480px) {
+  .fullWidth {
+    -webkit-line-clamp: unset;  /* Remove line clamping on very small screens */
+  }
+}
+
+  .word {
+    flex-direction: column;
+  }
+
+  .label {
+    flex: 0 0 30%;
+  }
+
+  .value {
+    flex: 0 0 100%;
+    text-align: left;
+  }
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  padding-top: 0.5rem;
+  word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+  .fullWidth {
+    -webkit-line-clamp: 3;
+  }
+
+  .label {
+    flex: 0 0 30%;
+  }
+}
+
+@media (max-width: 480px) {
+  .fullWidth {
+    -webkit-line-clamp: 4;
+  }
+}
+
+.word {
+  display: flex;
+}
+
+.word span {
+  white-space: nowrap;
+}
+
+
+
+

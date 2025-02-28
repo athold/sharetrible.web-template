@@ -1,16 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
-
+import { ListingPageComponent } from '../../containers/ListingPage/ListingPageCarousel';
 import { useConfiguration } from '../../context/configurationContext';
-
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { displayPrice } from '../../util/configHelpers';
 import { lazyLoadWithDimensions } from '../../util/uiHelpers';
 import { formatMoney } from '../../util/currency';
-import { ensureListing, ensureUser } from '../../util/data';
+import { ensureListing, ensureOwnListing, ensureUser } from '../../util/data';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
+import { getListingsById } from '../../ducks/marketplaceData.duck';
+
 
 import { AspectRatioWrapper, NamedLink, ResponsiveImage } from '../../components';
 
@@ -40,7 +41,7 @@ const priceData = (price, currency, intl) => {
 const LazyImage = lazyLoadWithDimensions(ResponsiveImage, { loadAfterInitialRendering: 3000 });
 
 const PriceMaybe = props => {
-  const { price, publicData, config, intl } = props;
+  const { price, publicData, config, intl, } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -91,11 +92,13 @@ export const ListingCard = props => {
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
+
   const id = currentListing.id.uuid;
-  const { title = '', price, publicData } = currentListing.attributes;
+  const { title = '', price, publicData, description } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
   const authorName = author.attributes.profile.displayName;
+
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
 
@@ -110,9 +113,9 @@ export const ListingCard = props => {
 
   const setActivePropsMaybe = setActiveListing
     ? {
-        onMouseEnter: () => setActiveListing(currentListing.id),
-        onMouseLeave: () => setActiveListing(null),
-      }
+      onMouseEnter: () => setActiveListing(currentListing.id),
+      onMouseLeave: () => setActiveListing(null),
+    }
     : null;
 
   return (
@@ -123,15 +126,57 @@ export const ListingCard = props => {
         height={aspectHeight}
         {...setActivePropsMaybe}
       >
-        <LazyImage
-          rootClassName={css.rootForImage}
-          alt={title}
-          image={firstImage}
-          variants={variants}
-          sizes={renderSizes}
-        />
+        {/* <LazyImage
+    rootClassName={css.rootForImage}
+    alt={title}
+    image={firstImage}
+    variants={variants}
+    sizes={renderSizes}
+  /> */}
+        <div className={css.myContainer}>
+          <div className={css.title}>
+            {richText(title, {
+              longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+              longWordClass: css.longWord,
+            })}
+          </div>
+          <div className={css.priceWrapper}>
+            <PriceMaybe
+              price={price}
+              publicData={publicData}
+              config={config}
+              intl={intl}
+              className={css.priceValue}  // You can pass the class here too
+            />
+          </div>
+        </div>
+        <div className={css.wordContainer}>
+          <div className={css.leftColumn}>
+            <div className={css.row}>
+              <span className={css.label}>Apyvarta:</span>
+              <span className={css.value}>{publicData.metines_pajamos}€</span>
+            </div>
+
+            <div className={css.row}>
+              <span className={css.label}>Pelnas:</span>
+              <span className={css.value}>{publicData.pelnas}€</span>
+            </div>
+          </div>
+
+          <div className={css.rightColumn}>
+            <div className={css.redSquare}>
+              <span className={css.centeredText}>Peržiurėti</span>
+            </div>
+          </div>
+
+          <div className={css.fullWidth}>
+            <span>{currentListing.attributes.description}</span>
+          </div>
+        </div>
+
       </AspectRatioWrapper>
-      <div className={css.info}>
+
+      {/* <div className={css.info}>
         <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
         <div className={css.mainInfo}>
           <div className={css.title}>
@@ -146,7 +191,7 @@ export const ListingCard = props => {
             </div>
           ) : null}
         </div>
-      </div>
+      </div> */}
     </NamedLink>
   );
 };
