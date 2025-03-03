@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
 
@@ -24,61 +24,30 @@ import css from './EditListingLocationForm.module.css';
 
 const identity = v => v;
 
-/**
- * The EditListingLocationForm component.
- *
- * @component
- * @param {Object} props
- * @param {string} props.formId - The form id
- * @param {string} [props.className] - Custom class that extends the default class for the root element
- * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
- * @param {boolean} props.autoFocus - Whether the form is auto focused
- * @param {boolean} props.disabled - Whether the form is disabled
- * @param {boolean} props.ready - Whether the form is ready
- * @param {boolean} props.updated - Whether the form is updated
- * @param {boolean} props.updateInProgress - Whether the update is in progress
- * @param {Object} props.fetchErrors - The fetch errors object
- * @param {string} props.saveActionMsg - The save action message
- * @param {Function} props.onSubmit - The submit function
- * @param {Object} props.errors - The errors object
- * @param {propTypes.error} props.errors.showListingsError - The show listings error
- * @param {propTypes.error} props.errors.updateListingError - The update listing error
- * @returns {JSX.Element}
- */
 export const EditListingLocationForm = ({ publicData, ...props }) => {
-  const [address, setAddress] = React.useState(null);
+  const [address, setAddress] = useState(null);
+  const [isAddressSet, setIsAddressSet] = useState(false);
 
   useEffect(() => {
     const fetchAddressData = async () => {
       if (publicData?.imonesKodas) {
-        console.log('Fetching company data for:', publicData.imonesKodas);
 
         try {
           const response = await fetch(
             `https://api.kapitalistai.lt/web/company/getData?companyCode=${publicData.imonesKodas}`
           );
 
-          console.log('API Response:', response);
-
           if (response.ok) {
             const data = await response.json();
-            console.log('API Data:', data);
-
             const fullTextAddress = data?.body?.companyData?.data?.registrationAddress?.fullTextAddress;
+
             if (fullTextAddress) {
-              console.log('Fetched Address:', fullTextAddress);
-              setAddress(fullTextAddress); // Set the fetched address
-            } else {
-              console.log('No address found in the API response');
+              setAddress(fullTextAddress);
             }
-          } else {
-            console.log('API request failed with status:', response.status);
           }
         } catch (error) {
           console.error('Error during API call:', error);
         }
-      } else {
-        console.log('No company code found in publicData');
       }
     };
 
@@ -90,6 +59,7 @@ export const EditListingLocationForm = ({ publicData, ...props }) => {
       {...props}
       render={formRenderProps => {
         const {
+          form,
           formId = 'EditListingLocationForm',
           autoFocus,
           className,
@@ -107,34 +77,33 @@ export const EditListingLocationForm = ({ publicData, ...props }) => {
         } = formRenderProps;
 
         const intl = useIntl();
-        const addressRequiredMessage = intl.formatMessage({
-          id: 'EditListingLocationForm.addressRequired',
-        });
-
         const { updateListingError, showListingsError } = fetchErrors || {};
-
         const classes = classNames(rootClassName || css.root, className);
         const submitReady = (updated && pristine) || ready;
         const submitInProgress = updateInProgress;
         const submitDisabled = invalid || disabled || submitInProgress;
-
-        // Default to fetched address if available
         const location = publicData?.location || {};
-        const { building } = location;
+
+        useEffect(() => {
+          if (address && !isAddressSet) {
+            form.change('location', { search: address });
+            setIsAddressSet(true);
+          }
+        }, [address, isAddressSet, form]);
 
         return (
           <Form className={classes} onSubmit={handleSubmit}>
-            {updateListingError ? (
+            {updateListingError && (
               <p className={css.error}>
                 <FormattedMessage id="EditListingLocationForm.updateFailed" />
               </p>
-            ) : null}
+            )}
 
-            {showListingsError ? (
+            {showListingsError && (
               <p className={css.error}>
                 <FormattedMessage id="EditListingLocationForm.showListingFailed" />
               </p>
-            ) : null}
+            )}
 
             <FieldLocationAutocompleteInput
               rootClassName={css.locationAddress}
@@ -150,21 +119,8 @@ export const EditListingLocationForm = ({ publicData, ...props }) => {
               })}
               useDefaultPredictions={false}
               format={identity}
-              // Use the fetched address or the existing one from publicData
               valueFromForm={values.location || { search: address || location.search || '' }}
             />
-
-            {/* <FieldTextInput
-              className={css.building}
-              type="text"
-              name="building"
-              id={`${formId}building`}
-              label={intl.formatMessage({ id: 'EditListingLocationForm.building' })}
-              placeholder={intl.formatMessage({
-                id: 'EditListingLocationForm.buildingPlaceholder',
-              })}
-              value={values.building || building} // Default to building if it's missing
-            /> */}
 
             <Button
               className={css.submitButton}

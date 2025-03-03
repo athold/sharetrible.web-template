@@ -21,7 +21,7 @@ const getInitialValues = props => {
   const locationFieldsPresent = publicData?.location?.address && geolocation;
   const location = publicData?.location || {};
   const { address, building } = location;
-  // console.log(publicData);
+
   return {
     building,
     location: locationFieldsPresent

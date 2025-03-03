@@ -86,6 +86,7 @@ import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
 
 import css from './ListingPage.module.css';
+import { constructQueryParamName } from '../../util/search.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -360,6 +361,7 @@ export const ListingPageComponent = props => {
             </div> */}
 
             <CustomListingFields
+              style={{ display: 'none' }}
               publicData={publicData}
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
@@ -373,19 +375,19 @@ export const ListingPageComponent = props => {
               Verslo aprašymas
             </Heading>
             <SectionTextMaybe text={description} showAsIngress />
-            <Heading as="h2" rootClassName={css.customHeading}>
+            {/* <Heading as="h2" rootClassName={css.customHeading}>
               <div className={css.myTextContainer}>Pajamų ir pelno kitimas</div>
               <div className={css.myGraphicContainer}>
                 grafikas
               </div>
-            </Heading>
-
+            </Heading> */}
+            {/* 
             <Heading as="h2" rootClassName={css.customHeading}>
               <div className={css.myTextContainer}>Darbuotojų dinamika</div>
               <div className={css.myGraphicContainer}>
                 grafikas
               </div>
-            </Heading>
+            </Heading> */}
 
 
             {/* <SectionMapMaybe
