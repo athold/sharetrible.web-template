@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import { Heading } from '../../components';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -51,6 +52,7 @@ import {
   NamedRedirect,
   OrderPanel,
   LayoutSingleColumn,
+  H2,
 } from '../../components';
 
 // Related components and modules
@@ -84,6 +86,7 @@ import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
 
 import css from './ListingPage.module.css';
+import { constructQueryParamName } from '../../util/search.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -96,6 +99,7 @@ export const ListingPageComponent = props => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+
     setMounted(true);
   }, []);
 
@@ -198,6 +202,7 @@ export const ListingPageComponent = props => {
     </span>
   );
 
+
   const authorAvailable = currentListing && currentListing.author;
   const userAndListingAuthorAvailable = !!(currentUser && authorAvailable);
   const isOwnListing =
@@ -287,8 +292,8 @@ export const ListingPageComponent = props => {
   const schemaAvailability = !currentListing.currentStock
     ? null
     : currentStock > 0
-    ? 'https://schema.org/InStock'
-    : 'https://schema.org/OutOfStock';
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
@@ -314,6 +319,7 @@ export const ListingPageComponent = props => {
         },
       }}
     >
+
       <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
         <div className={css.contentWrapperForProductLayout}>
           <div className={css.mainColumnForProductLayout}>
@@ -340,18 +346,23 @@ export const ListingPageComponent = props => {
                 }}
               />
             ) : null}
-            <SectionGallery
+            {/* <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
-            />
-            <div className={css.mobileHeading}>
+            /> */}
+            <div className={css.customHeading}>
+              <h3>
+                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+              </h3>
+            </div>
+            {/* <div className={css.mobileHeading}>
               <H4 as="h1" className={css.orderPanelTitle}>
                 <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
               </H4>
-            </div>
-            <SectionTextMaybe text={description} showAsIngress />
+            </div> */}
 
             <CustomListingFields
+              style={{ display: 'none' }}
               publicData={publicData}
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
@@ -359,14 +370,36 @@ export const ListingPageComponent = props => {
               intl={intl}
             />
 
-            <SectionMapMaybe
+            {/* <SectionTextMaybe text={description} showAsIngress /> */}
+
+            <Heading as={H2} style={{ fontSize: '14px' }} rootClassName={css.customHeading} >
+              Verslo aprašymas
+            </Heading>
+            <SectionTextMaybe text={description} showAsIngress />
+            {/* <Heading as="h2" rootClassName={css.customHeading}>
+              <div className={css.myTextContainer}>Pajamų ir pelno kitimas</div>
+              <div className={css.myGraphicContainer}>
+                grafikas
+              </div>
+            </Heading> */}
+            {/* 
+            <Heading as="h2" rootClassName={css.customHeading}>
+              <div className={css.myTextContainer}>Darbuotojų dinamika</div>
+              <div className={css.myGraphicContainer}>
+                grafikas
+              </div>
+            </Heading> */}
+
+
+            {/* <SectionMapMaybe
               geolocation={geolocation}
               publicData={publicData}
               listingId={currentListing.id}
               mapsConfig={config.maps}
             />
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
-            <SectionAuthorMaybe
+            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} /> */}
+
+            {/* <SectionAuthorMaybe
               title={title}
               listing={currentListing}
               authorDisplayName={authorDisplayName}
@@ -378,7 +411,7 @@ export const ListingPageComponent = props => {
               onSubmitInquiry={onSubmitInquiry}
               currentUser={currentUser}
               onManageDisableScrolling={onManageDisableScrolling}
-            />
+            /> */}
           </div>
           <div className={css.orderColumnForProductLayout}>
             <OrderPanel
