@@ -53,6 +53,7 @@ const EditListingPhotosPanel = props => {
     onSubmit,
     onRemoveImage,
     listingImageConfig,
+    publicData,
   } = props;
 
   const rootClass = rootClassName || css.root;
@@ -63,17 +64,12 @@ const EditListingPhotosPanel = props => {
     <div className={classes}>
       <H3 as="h1">
         {isPublished ? (
-          <FormattedMessage
-            id="EditListingPhotosPanel.title"
-            values={{ listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> }}
-          />
+          <span>Skelbimo informacija</span>
         ) : (
-          <FormattedMessage
-            id="EditListingPhotosPanel.createListingTitle"
-            values={{ lineBreak: <br /> }}
-          />
+          <span>Skelbimo informacija</span>
         )}
       </H3>
+
       <EditListingPhotosForm
         className={css.form}
         disabled={disabled}
@@ -90,6 +86,7 @@ const EditListingPhotosPanel = props => {
         updated={panelUpdated}
         updateInProgress={updateInProgress}
         listingImageConfig={listingImageConfig}
+        listingData={listing?.attributes}
       />
     </div>
   );

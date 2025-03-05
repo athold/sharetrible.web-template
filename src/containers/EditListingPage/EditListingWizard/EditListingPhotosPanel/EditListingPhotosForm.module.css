@@ -118,6 +118,7 @@
   color: var(--colorGrey300);
   margin-top: 24px;
   margin-bottom: 60px;
+  padding-top: 24px;
 
   @media (--viewportLarge) {
     margin-top: 0;
