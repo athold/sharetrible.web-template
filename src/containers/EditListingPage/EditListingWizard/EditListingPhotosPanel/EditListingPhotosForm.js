@@ -135,7 +135,7 @@ const FieldListingImage = props => {
  * @param {string} props.listingImageConfig.variantPrefix - The variant prefix
  * @returns {JSX.Element}
  */
-export const EditListingPhotosForm = props => {
+export const EditListingPhotosForm = ({ listingData, ...props }) => {
   const [state, setState] = useState({ imageUploadRequested: false });
   const [submittedImages, setSubmittedImages] = useState([]);
 
@@ -216,15 +216,15 @@ export const EditListingPhotosForm = props => {
             ) : null}
 
             <div className={css.imagesFieldArray}>
-              <FieldArray
+              {/* <FieldArray
                 name="images"
-              // validate={composeValidators(
-              //   nonEmptyArray(
-              //     intl.formatMessage({
-              //       id: 'EditListingPhotosForm.imageRequired',
-              //     })
-              //   )
-              // )}
+                validate={composeValidators(
+                  nonEmptyArray(
+                    intl.formatMessage({
+                      id: 'EditListingPhotosForm.imageRequired',
+                    })
+                  )
+                )}
               >
                 {({ fields }) =>
                   fields.map((name, index) => (
@@ -242,8 +242,8 @@ export const EditListingPhotosForm = props => {
                     />
                   ))
                 }
-              </FieldArray>
-
+              </FieldArray> */}
+              {/* 
               <FieldAddImage
                 id="addImage"
                 name="addImage"
@@ -264,19 +264,85 @@ export const EditListingPhotosForm = props => {
                 onImageUploadHandler={onImageUploadHandler}
                 aspectWidth={aspectWidth}
                 aspectHeight={aspectHeight}
-              />
+              /> */}
             </div>
 
-            {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null}
+            {/* {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null} */}
 
-            <ImageUploadError
+            {/* <ImageUploadError
               uploadOverLimit={uploadOverLimit}
               uploadImageError={uploadImageError}
-            />
+            /> */}
+
+
+            <div style={{
+              fontFamily: "var(--fontFamily)",
+              width: "100%",
+              padding: "10px",
+              border: "1px solid var(--colorGrey100)"
+            }}>
+              {[
+                { label: "Įmonės kainą:", value: `${listingData.price.amount}€` },
+                { label: "Įmonės pavadinimas:", value: listingData.title },
+                { label: "Įmonės kodas:", value: listingData.publicData.imonesKodas },
+                {
+                  label: "Veiklos sritis:",
+                  value: listingData.publicData.industry.charAt(0).toUpperCase() + listingData.publicData.industry.slice(1)
+                },
+                { label: "Darbuotojų skaičius šiandien:", value: listingData.publicData.darbuotoju },
+                { label: "Paskutinių metų apyvarta:", value: `${listingData.publicData.metines_pajamos}€` },
+                { label: "Paskutinių metų pelnas:", value: `${listingData.publicData.pelnas}€` },
+                { label: "Parduodama akcijų dalis:", value: `${listingData.publicData.akciju_dalis}%` },
+                { label: "Teisinė forma:", value: listingData.publicData.teisine_forma },
+                { label: "Registracijos šalis:", value: "Lietuva" },
+                { label: "Centrinė būstinė:", value: listingData.publicData.location.address },
+                { label: "Verslo aprašymas:", value: listingData.description },
+              ].map((item, index, array) => (
+                <div
+                  key={item.label}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "10px",
+                    borderBottom: index !== array.length - 1 ? "1px solid var(--colorGrey100)" : "none",
+                    width: "100%",
+                    fontWeight: "var(--fontWeightSemiBold)",
+                    letterSpacing: "-0.09px",
+                    fontSize: "16px",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    flexWrap: "wrap",  // Allow wrapping of content when needed
+                  }}
+                >
+                  <span style={{ marginRight: "20px", flexShrink: 0 }}>{item.label}</span> {/* Keep label fixed width */}
+                  <span style={{
+                    textAlign: "right",  // Align value to the right
+                    flex: 1,
+                    whiteSpace: "normal",  // Allow wrapping within the value
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                  }}>
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+
+
+
+
+
+
+
+
 
             <p className={css.tip}>
-              <FormattedMessage id="EditListingPhotosForm.addImagesTip" />
+              <span>
+                Jeigu nurodėte informaciją klaidingai, visada galite grįžti į praėjusį žingsnį šoniniame meniu
+              </span>
             </p>
+
 
             <PublishListingError error={publishListingError} />
             <ShowListingsError error={showListingsError} />
