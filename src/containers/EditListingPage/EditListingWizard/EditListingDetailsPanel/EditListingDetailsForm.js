@@ -13,6 +13,7 @@ import {
 } from '../../../../util/fieldHelpers';
 import { maxLength, required, composeValidators } from '../../../../util/validators';
 
+
 // Import shared components
 import {
   Form,
@@ -71,6 +72,8 @@ const FieldSelectListingType = props => {
     intl,
   } = props;
   const hasMultipleListingTypes = listingTypes?.length > 1;
+
+
 
   const handleOnChange = value => {
     const selectedListingType = listingTypes.find(config => config.listingType === value);
@@ -246,9 +249,21 @@ const requiredAndNonEmptyString11 = message => value => {
 };
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
-const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
+const AddListingFields = ({ listingData, ...props }) => {
+  const { listingType, listingFieldsConfig, selectedCategories, formId, intl, values } = props;
   const targetCategoryIds = Object.values(selectedCategories);
+
+  const companyCode = useState('');
+
+
+  const hiddenFields = [
+    "pub_teisine_forma",
+    "pub_darbuotoju",
+    "pub_metines_pajamos",
+    "pub_pelnas",
+    "pub_pagrindinis_adresas",
+  ];
+
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, schemaType, scope } = fieldConfig || {};
@@ -259,6 +274,15 @@ const AddListingFields = props => {
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
 
+    // Skip hidden fields and fields that should not be included
+    if (hiddenFields.includes(namespacedKey)) {
+      return pickedFields; // Skip adding the field to the list of fields
+    }
+
+    // // Skip if company code is empty and we need it for pub_industry
+    // if (namespacedKey === 'pub_industry' && companyCode) {
+    //   return pickedFields; // Skip adding the field if pub_imonesKodas is empty
+    // }
 
 
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
@@ -268,7 +292,7 @@ const AddListingFields = props => {
           key={namespacedKey}
           name={namespacedKey}
           fieldConfig={fieldConfig}
-          shouldDisable={namespacedKey === 'pub_imonesKodas' || namespacedKey === 'pub_akciju_dalis' ? false : true}
+          shouldDisable={namespacedKey === 'pub_imonesKodas' || namespacedKey === 'pub_akciju_dalis' || namespacedKey === 'pub_pagrindine_kaina' ? false : true}
           defaultRequiredMessage={intl.formatMessage({
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
@@ -277,7 +301,7 @@ const AddListingFields = props => {
       ]
       : pickedFields;
   }, []);
-  //requiredAndNonEmptyString11
+
   return <>{fields}</>;
 };
 
@@ -308,7 +332,8 @@ const AddListingFields = props => {
  * @param {Function} props.onSubmit - The submit function
  * @returns {JSX.Element}
  */
-const EditListingDetailsForm = props => (
+const EditListingDetailsForm = ({ listingData, ...props }) => (
+
   <FinalForm
     {...props}
     mutators={{ ...arrayMutators }}
@@ -338,7 +363,14 @@ const EditListingDetailsForm = props => (
         listingFieldsConfig = [],
         listingCurrency,
         values,
+        rootClassName,
+        listingMinimumPriceSubUnits = 0,
+
+
       } = formRenderProps;
+
+      const [companyData, setCompanyData] = useState(null);
+      const [responseStatus, setResponseStatus] = useState(null);
 
       useEffect(() => {
         if (!values?.pub_imonesKodas) return;
@@ -349,22 +381,34 @@ const EditListingDetailsForm = props => (
               `https://api.kapitalistai.lt/web/company/getData?companyCode=${values.pub_imonesKodas}`
             );
 
+
             if (response.ok) {
               const data = await response.json();
-              formApi.batch(() => {
-                formApi.change("pub_darbuotoju", Number(data?.body?.companyData?.data?.employeesActual?.employees));
-                formApi.change("pub_metines_pajamos", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
-                formApi.change("pub_teisine_forma", data?.body?.companyData?.data?.legalForm?.formName?.toString());
-                formApi.change("pub_pelnas", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
-              });
+              setCompanyData(data);
+
+              const responseCode = data?.statusCode || data?.code;
+
+              if (responseCode === 200) {
+                formApi.batch(() => {
+                  formApi.change("title", data?.body?.companyData?.data?.companyName?.toString());
+                  formApi.change("pub_darbuotoju", Number(data?.body?.companyData?.data?.employeesActual?.employees));
+                  formApi.change("pub_metines_pajamos", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
+                  formApi.change("pub_teisine_forma", data?.body?.companyData?.data?.legalForm?.formName?.toString());
+                  formApi.change("pub_pelnas", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
+                  formApi.change("pub_pagrindinis_adresas", data?.body?.companyData?.data?.registrationAddress?.fullTextAddress?.toString());
+                });
+              } else {
+                setResponseStatus(responseCode);
+              }
+            } else {
+              const errorData = await response.json();
             }
           } catch (error) {
-            console.error("Error during API call:", error);
+            setResponseStatus(500);
           }
         };
-
         fetchCompanyData();
-      }, [values.pub_imonesKodas]); // **Minimized dependencies to avoid unnecessary re-renders**
+      }, [values.pub_imonesKodas]);
 
 
 
@@ -417,6 +461,11 @@ const EditListingDetailsForm = props => (
         !hasMandatoryListingTypeData ||
         !isCompatibleCurrency;
 
+      const imonesKodasFieldConfig = listingFieldsConfig.filter(field => field.key === 'imonesKodas');
+      const industryFieldConfig = listingFieldsConfig.find(field => field.key === 'industry');
+      const kainaFieldConfig = listingFieldsConfig.find(field => field.key === 'pagrindine_kaina');
+      const akcijuDalisFieldConfig = listingFieldsConfig.find(field => field.key === 'akciju_dalis');
+
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessage fetchErrors={fetchErrors} />
@@ -430,6 +479,73 @@ const EditListingDetailsForm = props => (
             formId={formId}
             intl={intl}
           />
+
+
+
+          {/* Only render the field for imonesKodas */}
+          <AddListingFields
+            listingType={listingType}
+            listingFieldsConfig={imonesKodasFieldConfig}  // Only passing the filtered field
+            selectedCategories={pickSelectedCategories(values)}
+            formId={formId}
+            intl={intl}
+          />
+          {showListingFields && isCompatibleCurrency && (
+            <>
+              {companyData && companyData.statusCode === 200 ? (
+                <p style={{ fontSize: '13px', marginTop: '-16px!important' }}>Įmonė rasta - {values?.title}</p>
+              ) : (companyData && (companyData.statusCode === 400 || companyData.statusCode === 404)) ? (
+                <p style={{ color: 'red', fontSize: '13px', marginTop: '-16px!important' }}>Įmonė su tokiu kodu - nerasta.</p>
+              ) : companyData && companyData.statusCode === 500 ? (
+                <p style={{ fontSize: '13px', marginTop: '-16px!important' }}>Klaida, bandykite dar kartą.</p>
+              ) : null}
+            </>
+          )}
+
+          {industryFieldConfig && companyData && companyData?.statusCode === 200 && (
+            <CustomExtendedDataField
+              key="pub_industry"
+              name="pub_industry"
+              fieldConfig={industryFieldConfig}
+              formId={formId}
+              shouldDisable={false}
+              defaultRequiredMessage={intl.formatMessage({
+                id: 'EditListingDetailsForm.defaultRequiredMessage',
+              })}
+            />
+          )}
+          {kainaFieldConfig && companyData?.statusCode === 200 && (
+            <CustomExtendedDataField
+              key="pub_pagrindine_kaina"
+              name="pub_pagrindine_kaina"
+              fieldConfig={kainaFieldConfig}
+              formId={formId}
+              shouldDisable={false}
+              defaultRequiredMessage={intl.formatMessage({
+                id: 'EditListingDetailsForm.defaultRequiredMessage',
+              })}
+            />
+          )}
+          {akcijuDalisFieldConfig && companyData?.statusCode === 200 && (
+            <CustomExtendedDataField
+              key="pub_akciju_dalis"
+              name="pub_akciju_dalis"
+              fieldConfig={akcijuDalisFieldConfig}
+              formId={formId}
+              shouldDisable={false}
+              defaultRequiredMessage={intl.formatMessage({
+                id: 'EditListingDetailsForm.defaultRequiredMessage',
+              })}
+            />
+          )}
+          {!isCompatibleCurrency && listingType && (
+            <p className={css.error}>
+              <FormattedMessage
+                id="EditListingDetailsForm.incompatibleCurrency"
+                values={{ marketplaceName, marketplaceCurrency }}
+              />
+            </p>
+          )}
 
           {showCategories && isCompatibleCurrency && (
             <FieldSelectCategory
@@ -448,18 +564,16 @@ const EditListingDetailsForm = props => (
               id={`${formId}title`}
               name="title"
               className={css.title}
-              type="text"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.title' })}
+              type="hidden"
               placeholder={intl.formatMessage({
                 id: 'EditListingDetailsForm.titlePlaceholder',
               })}
               maxLength={TITLE_MAX_LENGTH}
               validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
-              autoFocus={autoFocus}
             />
           )}
 
-          {showDescription && isCompatibleCurrency && (
+          {showDescription && isCompatibleCurrency && companyData && companyData.statusCode === 200 && (
             <FieldTextInput
               id={`${formId}description`}
               name="description"
@@ -477,25 +591,6 @@ const EditListingDetailsForm = props => (
             />
           )}
 
-          {showListingFields && isCompatibleCurrency && (
-            <AddListingFields
-              listingType={listingType}
-              listingFieldsConfig={listingFieldsConfig}
-              selectedCategories={pickSelectedCategories(values)}
-              formId={formId}
-              intl={intl}
-            />
-          )}
-
-          {!isCompatibleCurrency && listingType && (
-            <p className={css.error}>
-              <FormattedMessage
-                id="EditListingDetailsForm.incompatibleCurrency"
-                values={{ marketplaceName, marketplaceCurrency }}
-              />
-            </p>
-          )}
-
           <Button
             className={css.submitButton}
             type="submit"
@@ -506,7 +601,7 @@ const EditListingDetailsForm = props => (
             {saveActionMsg}
           </Button>
         </Form>
-      );
+      )
     }}
   />
 );

@@ -312,7 +312,6 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     variantPrefix = 'listing-card',
   } = config.layout.listingImage;
   const aspectRatio = aspectHeight / aspectWidth;
-
   const searchListingsCall = searchListings(
     {
       ...rest,
@@ -332,6 +331,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'publicData.unitType',
         'publicData.metines_pajamos',
         'publicData.pelnas',
+        'publicData.pagrindine_kaina',
         // These help rendering of 'purchase' listings,
         // when transitioning from search page to listing page
         'publicData.pickupEnabled',
