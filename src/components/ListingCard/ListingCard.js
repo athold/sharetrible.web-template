@@ -118,6 +118,7 @@ export const ListingCard = props => {
     }
     : null;
 
+
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
       <AspectRatioWrapper
@@ -140,15 +141,21 @@ export const ListingCard = props => {
               longWordClass: css.longWord,
             })}
           </div>
-          <div className={css.priceWrapper}>
+          {price ? (
             <PriceMaybe
               price={price}
               publicData={publicData}
               config={config}
               intl={intl}
-              className={css.priceValue}  // You can pass the class here too
+              className={css.priceValue} // You can pass the class here too
             />
-          </div>
+          ) : (
+            <div className={css.priceWrapper}>
+              <div style={{ fontSize: '1.45em' }}>
+                {publicData?.pagrindine_kaina} €
+              </div>
+            </div>
+          )}
         </div>
         <div className={css.wordContainer}>
           <div className={css.leftColumn}>
@@ -173,6 +180,10 @@ export const ListingCard = props => {
             <span>{currentListing.attributes.description}</span>
           </div>
         </div>
+
+
+
+
 
       </AspectRatioWrapper>
 
