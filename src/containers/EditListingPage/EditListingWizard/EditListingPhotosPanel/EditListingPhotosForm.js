@@ -200,7 +200,6 @@ export const EditListingPhotosForm = ({ listingData, ...props }) => {
         const imagesError = touched.images && errors?.images && errors.images[ARRAY_ERROR];
 
         const classes = classNames(css.root, className);
-
         return (
           <Form
             className={classes}
@@ -282,7 +281,7 @@ export const EditListingPhotosForm = ({ listingData, ...props }) => {
               border: "1px solid var(--colorGrey100)"
             }}>
               {[
-                { label: "Įmonės kainą:", value: `${listingData.price.amount}€` },
+                { label: "Įmonės kainą:", value: `${listingData.publicData.pagrindine_kaina} €` },
                 { label: "Įmonės pavadinimas:", value: listingData.title },
                 { label: "Įmonės kodas:", value: listingData.publicData.imonesKodas },
                 {
@@ -290,12 +289,12 @@ export const EditListingPhotosForm = ({ listingData, ...props }) => {
                   value: listingData.publicData.industry.charAt(0).toUpperCase() + listingData.publicData.industry.slice(1)
                 },
                 { label: "Darbuotojų skaičius šiandien:", value: listingData.publicData.darbuotoju },
-                { label: "Paskutinių metų apyvarta:", value: `${listingData.publicData.metines_pajamos}€` },
-                { label: "Paskutinių metų pelnas:", value: `${listingData.publicData.pelnas}€` },
-                { label: "Parduodama akcijų dalis:", value: `${listingData.publicData.akciju_dalis}%` },
+                { label: "Paskutinių metų apyvarta:", value: `${listingData.publicData.metines_pajamos} €` },
+                { label: "Paskutinių metų pelnas:", value: `${listingData.publicData.pelnas} €` },
+                { label: "Parduodama akcijų dalis:", value: `${listingData.publicData.akciju_dalis} %` },
                 { label: "Teisinė forma:", value: listingData.publicData.teisine_forma },
                 { label: "Registracijos šalis:", value: "Lietuva" },
-                { label: "Centrinė būstinė:", value: listingData.publicData.location.address },
+                { label: "Centrinė būstinė:", value: listingData.publicData.pagrindinis_adresas },
                 { label: "Verslo aprašymas:", value: listingData.description },
               ].map((item, index, array) => (
                 <div
@@ -327,26 +326,13 @@ export const EditListingPhotosForm = ({ listingData, ...props }) => {
                 </div>
               ))}
             </div>
-
-
-
-
-
-
-
-
-
-
             <p className={css.tip}>
               <span>
                 Jeigu nurodėte informaciją klaidingai, visada galite grįžti į praėjusį žingsnį šoniniame meniu
               </span>
             </p>
-
-
             <PublishListingError error={publishListingError} />
             <ShowListingsError error={showListingsError} />
-
             <Button
               className={css.submitButton}
               type="submit"
