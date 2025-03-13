@@ -66,11 +66,14 @@ import css from './EditListingWizard.module.css';
 //         and listing publishing happens after last panel.
 // Note 3: The first tab creates a draft listing and title is mandatory attribute for it.
 //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
-const TABS_DETAILS_ONLY = [DETAILS];
+const DETAILS_WITH_PRICING = [DETAILS, PRICING];
+
+const TABS_DETAILS_ONLY = DETAILS_WITH_PRICING;
 const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
-const TABS_BOOKING = [DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
-const TABS_INQUIRY = [DETAILS, LOCATION, PRICING, PHOTOS];
+const TABS_BOOKING = [DETAILS, AVAILABILITY, PHOTOS];
+const TABS_INQUIRY = [DETAILS, PHOTOS];
 const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING, ...TABS_INQUIRY];
+
 
 // Tabs are horizontal in small screens
 const MAX_HORIZONTAL_NAV_SCREEN_WIDTH = 1023;
@@ -120,7 +123,11 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
   if (tab === DETAILS) {
     labelKey = 'EditListingWizard.tabLabelDetails';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
-  } else if (tab === PRICING) {
+  } else if (tab === PRICING && DETAILS_WITH_PRICING.includes(tab)) {
+    labelKey = 'EditListingWizard.tabLabelDetailsWithPricing';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetailsWithPricing`;
+  }
+  else if (tab === PRICING) {
     labelKey = 'EditListingWizard.tabLabelPricing';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePricing`;
   } else if (tab === PRICING_AND_STOCK) {
@@ -245,7 +252,7 @@ const tabCompleted = (tab, listing, config) => {
     case AVAILABILITY:
       return !!availabilityPlan;
     case PHOTOS:
-      return true //images && images.length > 0;
+      return true//images && images.length > 0;
     default:
       return false;
   }
@@ -340,49 +347,7 @@ const getListingTypeConfig = (listing, selectedListingType, config) => {
   return listingTypeConfig;
 };
 
-/**
- * EditListingWizard is a component that renders the tabs that update the different parts of the listing.
- * It also handles the payout details modal and the Stripe onboarding form if the listing is a new one.
- * TODO: turn this into a functional component
- *
- * @component
- * @param {Object} props - The props object
- * @param {string} props.id - The id of the listing
- * @param {string} [props.className] - Custom class that extends the default class for the root element
- * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
- * @param {Object} props.config - The config object
- * @param {Object} props.routeConfiguration - The route configuration object
- * @param {Object} props.params - The params object
- * @param {string} props.params.id - The id of the listing
- * @param {string} props.params.slug - The slug of the listing
- * @param {'new'|'draft'|'edit'} props.params.type - The type of the listing
- * @param {DETAILS | PRICING | PRICING_AND_STOCK | DELIVERY | LOCATION | AVAILABILITY | PHOTOS} props.params.tab - The name of the tab
- * @param {propTypes.ownListing} props.listing - The listing object
- * @param {propTypes.error} [props.errors.createListingDraftError] - The error object for createListingDraft
- * @param {propTypes.error} [props.errors.publishListingError] - The error object for publishListing
- * @param {propTypes.error} [props.errors.updateListingError] - The error object for updateListing
- * @param {propTypes.error} [props.errors.showListingsError] - The error object for showListings
- * @param {propTypes.error} [props.errors.uploadImageError] - The upload image error object
- * @param {propTypes.error} [props.errors.createStripeAccountError] - The error object for createStripeAccount
- * @param {propTypes.error} [props.errors.addExceptionError] - The error object for addException
- * @param {propTypes.error} [props.errors.deleteExceptionError] - The error object for deleteException
- * @param {propTypes.error} [props.errors.setStockError] - The error object for setStock
- * @param {boolean} props.fetchInProgress - Whether the fetch is in progress
- * @param {boolean} props.getAccountLinkInProgress - Whether the get account link is in progress
- * @param {boolean} props.payoutDetailsSaveInProgress - Whether the payout details save is in progress
- * @param {boolean} props.payoutDetailsSaved - Whether the payout details saved is in progress
- * @param {Function} props.onPayoutDetailsChange - The on payout details change function
- * @param {Function} props.onPayoutDetailsSubmit - The on payout details submit function
- * @param {Function} props.onGetStripeConnectAccountLink - The get StripeConnectAccountLink function
- * @param {propTypes.error} [props.createStripeAccountError] - The error object for createStripeAccount (TODO: errors object contains this)
- * @param {propTypes.error} [props.updateStripeAccountError] - The error object for updateStripeAccount (TODO: errors object contains this)
- * @param {propTypes.error} [props.fetchStripeAccountError] - The error object for fetchStripeAccount
- * @param {propTypes.error} [props.stripeAccountError] - The error object for stripeAccount (TODO: errors object contains this)
- * @param {propTypes.error} [props.stripeAccountLinkError] - The error object for stripeAccountLink
- * @param {Function} props.onManageDisableScrolling - The on manage disable scrolling function
- * @param {intlShape} props.intl - The intl object
- * @returns {JSX.Element} EditListingWizard component
- */
+
 class EditListingWizard extends Component {
   constructor(props) {
     super(props);
@@ -536,23 +501,23 @@ class EditListingWizard extends Component {
     if (invalidExistingListingType && isNewListingFlow && selectedTab !== tabs[0]) {
       return <NamedRedirect name="EditListingPage" params={{ ...params, tab: tabs[0] }} />;
     }
-
     // If selectedTab is not active for listing with valid listing type,
     // redirect to the beginning of wizard
     if (!params.tab === "location") {
       if (!invalidExistingListingType && !tabsStatus[selectedTab]) {
+
         const currentTabIndex = tabs.indexOf(selectedTab);
         const nearestActiveTab = tabs
           .slice(0, currentTabIndex)
           .reverse()
           .find(t => tabsStatus[t]);
-
         console.log(
           `You tried to access an EditListingWizard tab (${selectedTab}), which was not yet activated.`
         );
         return <NamedRedirect name="EditListingPage" params={{ ...params, tab: nearestActiveTab }} />;
       }
     }
+
     const isBrowser = typeof window !== 'undefined';
     const hasMatchMedia = isBrowser && window?.matchMedia;
     const isMobileLayout = hasMatchMedia
@@ -659,6 +624,7 @@ class EditListingWizard extends Component {
                 tab={tab}
                 params={params}
                 listing={listing}
+                price={listing?.attributes?.price}
                 marketplaceTabs={tabs}
                 errors={errors}
                 handleCreateFlowTabScrolling={this.handleCreateFlowTabScrolling}
