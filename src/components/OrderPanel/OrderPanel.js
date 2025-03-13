@@ -82,6 +82,10 @@ const priceData = (price, currency, intl) => {
 };
 
 const formatMoneyIfSupportedCurrency = (price, intl) => {
+  if (!price || !price.currency) {
+    return 'Invalid price';
+  }
+
   try {
     return formatMoney(intl, price);
   } catch (e) {
