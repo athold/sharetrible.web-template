@@ -394,7 +394,7 @@ const EditListingDetailsForm = ({ listingData, ...props }) => (
                   formApi.change("pub_darbuotoju", Number(data?.body?.companyData?.data?.employeesActual?.employees));
                   formApi.change("pub_metines_pajamos", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
                   formApi.change("pub_teisine_forma", data?.body?.companyData?.data?.legalForm?.formName?.toString());
-                  formApi.change("pub_pelnas", parseFloat(data?.body?.companyData?.data?.profitBeforeTax?.profitBeforeTax));
+                  formApi.change("pub_pelnas", parseFloat(data?.body?.companyData?.data?.lastTurnover?.turnover));
                   formApi.change("pub_pagrindinis_adresas", data?.body?.companyData?.data?.registrationAddress?.fullTextAddress?.toString());
                 });
               } else {
