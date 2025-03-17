@@ -77,14 +77,11 @@ const SectionDetailsMaybe = props => {
               ? publicData.industry.charAt(0).toUpperCase() + publicData.industry.slice(1)
               : ""}
           </span>
-
         </li>
         <li id="field_2" className={css.detailsRow}>
           <span className={css.detailLabel}>Darbuotojų skaičius šiandien:</span>
           <span>{publicData.darbuotoju}</span>
         </li>
-
-
         <li id="field_3" className={css.detailsRow}>
           <span className={css.detailLabel}>Paskutinių metų apyvarta:</span>
           <span>
@@ -97,7 +94,6 @@ const SectionDetailsMaybe = props => {
             {publicData.pelnas ? `${publicData.pelnas} €` : ""}
           </span>
         </li>
-
         <li id="field_5" className={css.detailsRow}>
           <span className={css.detailLabel}>Parduodama akcijų dalis:</span>
           <span>{publicData.akciju_dalis ? `${publicData.akciju_dalis} %` : ""}</span>
@@ -115,17 +111,11 @@ const SectionDetailsMaybe = props => {
         <li id="field_8" className={css.detailsRow} style={{ paddingBottom: "25px" }}>
           <span className={css.detailLabel}>Centrinė būstinė:</span>
           <span>
-            {publicData?.location?.address
-              ? publicData.location.address
-              : "Nėra duomenų"}
+            {publicData?.pagrindinis_adresas || publicData?.location?.address || "Nėra duomenų"}
           </span>
         </li>
       </ul>
     </section>
-
-
-
-
   ) : null;
 };
 
