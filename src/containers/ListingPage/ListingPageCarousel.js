@@ -202,10 +202,9 @@ export const ListingPageComponent = props => {
   useEffect(() => {
     if (!currentListingCompanyCode) return;
 
-    fetch(`https://api.kapitalistai.lt/web/company/getFinancialData?companyCode=302497251`) //${currentListingCompanyCode}`)
+    fetch(`https://api.kapitalistai.lt/web/company/getFinancialData?companyCode=${currentListingCompanyCode}`)
       .then(response => response.json())
       .then(body => {
-        console.log(body);  // Check the API response structure
 
         if (
           body.body &&
