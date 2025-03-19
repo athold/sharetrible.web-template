@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import { isFieldForListingType } from '../../util/fieldHelpers';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import SectionTextMaybe from './SectionTextMaybe';
 
 import { Heading, H2 } from '../../components';
 
