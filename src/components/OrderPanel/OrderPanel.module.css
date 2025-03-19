@@ -95,7 +95,7 @@
 
   @media (--viewportMedium) {
     width: 100%;
-    margin: 12px 0 36px 0;
+    margin: 12px 0 -50px 0;
     color: var(--colorGrey700);
   }
 }
@@ -287,4 +287,54 @@
   @media (--viewportMedium) {
     padding: 0;
   }
+}
+
+ .myResponsiveContainer {
+  padding: 8px;
+} 
+
+@media screen and (max-width: 768px) {
+  .myResponsiveContainer {
+    padding: 16px !important;
+  }
+}
+
+
+.myRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Ensures text and value are aligned */
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.myLabel {
+  flex: 1; /* Ensures labels stay on one line */
+}
+
+.myValue {
+  font-size: 1em;
+  font-weight: bold;
+  text-align: right; /* Keeps value aligned to the right */
+  flex-shrink: 0; /* Prevents value from shrinking */
+}
+
+.myAuthorContainer {
+  margin-top: 10px;
+  text-align: right;
+}
+
+/* Apply paddingRight only on mobile screens */
+@media (max-width: 768px) {
+  .myAuthorContainer {
+    padding-right: 14px;
+  }
+}
+
+.myApprovedUserBadge {
+  background-color: green;
+  padding: 3px;
+  border-radius: 4px;
+  color: white;
+  margin-top: 5px;
+  display: inline-block;
 }

@@ -93,6 +93,7 @@ const formatMoneyIfSupportedCurrency = (price, intl) => {
   }
 };
 
+
 const openOrderModal = (isOwnListing, isClosed, history, location) => {
   if (isOwnListing || isClosed) {
     window.scrollTo(0, 0);
@@ -321,7 +322,27 @@ const OrderPanel = props => {
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
   return (
-    <div className={classes}>
+
+    <div className={classes} style={{ padding: '8px' }}>
+      <div className={css.myResponsiveContainer}>
+        <div className={css.myRow}>
+          <span className={css.myLabel}>Įmonės kaina:</span>
+          <span className={css.myValue}>{listing.attributes.publicData.pagrindine_kaina} €</span>
+        </div>
+        <div className={css.myRow}>
+          <span className={css.myLabel}>Pelnas prieš mokesčius:</span>
+          <span className={css.myValue}>{listing.attributes.publicData.pelnas} €</span>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
       <ModalInMobile
         containerClassName={css.modalContainer}
         id="OrderFormInModal"
@@ -347,15 +368,26 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
+        <div className={css.author} style={{ display: 'block' }}>
+          {/* <div style={{ display: 'block' }}>
+            <span className={css.providerNameLinked}>
+              <FormattedMessage
+                id="OrderPanel.author"
+                values={{
+                  name: `Vardas, Pavardė: ${authorLink.props.children || ''}`, // Use the correct property here
+                }}
+              />
+            </span>
+          </div>
 
-        <div className={css.author}>
-          <AvatarSmall user={author} className={css.providerAvatar} />
-          <span className={css.providerNameLinked}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
-          </span>
-          <span className={css.providerNamePlain}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
-          </span>
+
+          <div style={{ display: 'block' }}>
+            <span className={css.providerNamePlain}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
+            </span>
+          </div> */}
+
+
         </div>
 
         {showPriceMissing ? (
