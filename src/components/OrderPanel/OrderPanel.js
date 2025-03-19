@@ -95,6 +95,7 @@ const formatMoneyIfSupportedCurrency = (price, intl) => {
   }
 };
 
+
 const openOrderModal = (isOwnListing, isClosed, history, location) => {
   if (isOwnListing || isClosed) {
     window.scrollTo(0, 0);
@@ -325,17 +326,18 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
 
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
   return (
 
     <div className={classes} style={{ padding: '8px' }}>
       <div className={css.myResponsiveContainer}>
         <div className={css.myRow}>
-          <span className={css.myLabel}>Įmonės vertė:</span>
-          <span className={css.myValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+          <span className={css.myLabel}>Įmonės kaina:</span>
+          <span className={css.myValue}>{listing.attributes.publicData.pagrindine_kaina} €</span>
         </div>
         <div className={css.myRow}>
           <span className={css.myLabel}>Pelnas prieš mokesčius:</span>
-          <span className={css.myValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+          <span className={css.myValue}>{listing.attributes.publicData.pelnas} €</span>
         </div>
       </div>
 
@@ -398,36 +400,6 @@ const OrderPanel = props => {
               <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
             </span>
           </div> */}
-
-
-
-          {/* Add telephone, email, and message under the name */}
-          <div style={{ display: 'block' }}>
-            <div style={{ display: 'block' }}>
-              <label style={{ display: 'block', paddingBottom: '2px' }}>
-                <FormattedMessage id="OrderPanel.name" defaultMessage="Vardas, Pavardė" />:
-              </label>
-              <input type="text" defaultValue={author?.attributes?.name || ''} />
-            </div>
-            <div style={{ display: 'block' }}>
-              <label style={{ display: 'block', paddingBottom: '2px' }}>
-                <FormattedMessage id="OrderPanel.telephone" defaultMessage="Telefonas" />:
-              </label>
-              <input type="text" defaultValue={author?.attributes?.phone || ''} />
-            </div>
-            <div style={{ display: 'block' }}>
-              <label style={{ display: 'block', paddingBottom: '2px' }}>
-                <FormattedMessage id="OrderPanel.email" defaultMessage="El.paštas" />:
-              </label>
-              <input type="email" defaultValue={author?.attributes?.email || ''} />
-            </div>
-            <div style={{ display: 'block' }}>
-              <label style={{ display: 'block', paddingBottom: '2px' }}>
-                <FormattedMessage id="OrderPanel.message" defaultMessage="Žinutė" />:
-              </label>
-              <textarea defaultValue={author?.attributes?.message || ''}></textarea>
-            </div>
-          </div>
 
 
         </div>
