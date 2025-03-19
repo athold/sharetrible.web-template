@@ -45,9 +45,11 @@ import {
   resolveLatestProcessName,
 } from '../../transactions/transaction';
 
-import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
+
+import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2, H3, H5 } from '../../components';
 
 import css from './OrderPanel.module.css';
+import { getCurrentScope } from '@sentry/browser';
 
 const BookingTimeForm = loadable(() =>
   import(/* webpackChunkName: "BookingTimeForm" */ './BookingTimeForm/BookingTimeForm')
@@ -132,6 +134,7 @@ const PriceMaybe = props => {
   const {
     price,
     publicData,
+    privateData,
     validListingTypes,
     intl,
     marketplaceCurrency,
@@ -160,7 +163,9 @@ const PriceMaybe = props => {
     </div>
   ) : (
     <div className={css.priceContainer}>
-      <p className={css.price}>{formatMoneyIfSupportedCurrency(price, intl)}</p>
+      {/* <p className={css.price}>{formatMoneyIfSupportedCurrency(price, intl)}</p> */}
+      {/* <p className={css.price}>Kaina</p> */}
+
       <div className={css.perUnit}>
         <FormattedMessage id="OrderPanel.perUnit" values={{ unitType }} />
       </div>
@@ -319,6 +324,7 @@ const OrderPanel = props => {
   const authorDisplayName = userDisplayNameAsString(author, '');
 
   const classes = classNames(rootClassName || css.root, className);
+
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
   return (
@@ -352,14 +358,22 @@ const OrderPanel = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
-        <div className={css.modalHeading}>
+
+
+        <div className={css.modalHeading} >
           <H1 className={css.heading}>{title}</H1>
         </div>
-
+        <h4 style={{ textAlign: 'center', borderBottom: '2px solid #000', padding: '5px' }}>
+          Susisiekti su pardavėju
+        </h4>
         <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+
+          {/* 
+          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>} */}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
+
+
 
         <PriceMaybe
           price={price}
@@ -389,6 +403,10 @@ const OrderPanel = props => {
 
 
         </div>
+
+
+
+
 
         {showPriceMissing ? (
           <PriceMissing />
@@ -506,7 +524,26 @@ const OrderPanel = props => {
             )}
           </PrimaryButton>
         )}
+
       </div>
+      <div className={css.myAuthorContainer}>
+        <FormattedMessage
+          id="OrderPanel.author"
+          values={{
+            name: `Skelbimą įkėlė: ${authorLink.props.children || ''}`,
+          }}
+        />
+        <br />
+        {props.author.attributes.profile.metadata.approvedUser === 'approved' && (
+          <span className={css.myApprovedUserBadge}>
+            Tapatybė patvirtinta
+          </span>
+        )}
+      </div>
+
+
+
+
     </div>
   );
 };
