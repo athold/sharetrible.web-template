@@ -373,7 +373,7 @@ const EditListingDetailsForm = ({ listingData, ...props }) => (
       const [responseStatus, setResponseStatus] = useState(null);
 
       useEffect(() => {
-        if (!values?.pub_imonesKodas) return;
+        if (!values?.pub_imonesKodas || values.pub_imonesKodas.toString().length < 8) return;
 
         const fetchCompanyData = async () => {
           try {
@@ -493,11 +493,11 @@ const EditListingDetailsForm = ({ listingData, ...props }) => (
           {showListingFields && isCompatibleCurrency && (
             <>
               {companyData && companyData.statusCode === 200 ? (
-                <p style={{ fontSize: '13px', marginTop: '-16px!important' }}>Įmonė rasta - {values?.title}</p>
+                <p style={{ fontSize: '13px', marginTop: '-16px' }}>Įmonė rasta - {values?.title}</p>
               ) : (companyData && (companyData.statusCode === 400 || companyData.statusCode === 404)) ? (
-                <p style={{ color: 'red', fontSize: '13px', marginTop: '-16px!important' }}>Įmonė su tokiu kodu - nerasta.</p>
+                <p style={{ color: 'red', fontSize: '13px', marginTop: '-16px' }}>Įmonė su tokiu kodu - nerasta.</p>
               ) : companyData && companyData.statusCode === 500 ? (
-                <p style={{ fontSize: '13px', marginTop: '-16px!important' }}>Klaida, bandykite dar kartą.</p>
+                <p style={{ fontSize: '13px', marginTop: '-16px' }}>Klaida, bandykite dar kartą.</p>
               ) : null}
             </>
           )}

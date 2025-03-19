@@ -1,18 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import { isFieldForListingType } from '../../util/fieldHelpers';
 
-import { Heading } from '../../components';
+import { Heading, H2 } from '../../components';
 
 import css from './ListingPage.module.css';
 
 const SectionDetailsMaybe = props => {
-  const { publicData, metadata = {}, listingFieldConfigs, isFieldForCategory, intl } = props;
+  const { publicData, metadata = {}, listingFieldConfigs, isFieldForCategory, intl, description } = props;
 
   if (!publicData || !listingFieldConfigs) {
     return null;
   }
+
+  const currentListingCompanyCode = publicData.imonesKodas;
+
+  const [financialData, setFinancialData] = useState([]);
+
+  useEffect(() => {
+    if (!currentListingCompanyCode) return;
+
+    fetch(`https://api.kapitalistai.lt/web/company/getFinancialData?companyCode=${currentListingCompanyCode}`)
+      .then(response => response.json())
+      .then(body => {
+        console.log(body);
+        if (
+          body.body &&
+          body.body.financialData &&
+          body.body.financialData.data &&
+          body.body.financialData.data.financialRatios
+        ) {
+          const ratios = body.body.financialData.data.financialRatios;
+
+          const chartData = ratios.map(entry => ({
+            name: entry.financialYear.toString(),
+            value1: entry.turnover || 0,
+            value2: entry.profitBeforeTax || 0,
+          }));
+          setFinancialData(chartData);
+        } else {
+          console.error("Financial Ratios not found in response");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, [currentListingCompanyCode]);
+
+  const filteredData = financialData.filter(d => d.value1 > 0 || d.value2 > 0);
 
   const pickListingFields = (filteredConfigs, config) => {
     const { key, schemaType, enumOptions, showConfig = {} } = config;
@@ -115,6 +151,29 @@ const SectionDetailsMaybe = props => {
           </span>
         </li>
       </ul>
+      <Heading as={H2} style={{ fontSize: '14px' }} rootClassName={css.customHeading} >
+        Verslo aprašymas
+      </Heading>
+      <SectionTextMaybe text={description} showAsIngress />
+      <div className="p-4">
+        <Heading as={H2} style={{ fontSize: '14px', marginBottom: '5px' }} rootClassName={css.customHeading} >
+          Apyvartos grafikas
+        </Heading>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={filteredData}
+            margin={{ left: 8 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis width={80} />
+            <Tooltip />
+            <Legend layout="horizontal" verticalAlign="top" align="center" wrapperStyle={{ top: -5 }} />
+            <Bar dataKey="value1" fill="#084aad" barSize={20} name="Pardavimo pajamos" />
+            <Bar dataKey="value2" fill="#f59d05" barSize={20} name="Pelnas (nuostoliai) prieš mokeščius" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </section>
   ) : null;
 };
