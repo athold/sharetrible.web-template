@@ -126,9 +126,30 @@ const CustomFieldLong = props => {
   // Field with schema type 'long' will always be validated against min & max
   const validate = (value, min, max) => {
     const requiredMsg = requiredMessage || defaultRequiredMessage;
-    return isRequired && value == null
-      ? requiredMsg
-      : validateInteger(value, max, min, numberTooSmallMessage, numberTooBigMessage);
+
+    // If the field is required and has no value, return the required message
+    if (isRequired && value == null) {
+      return requiredMsg;
+    }
+
+    // If value is not set, skip the "too small" validation.
+    if (value == null) {
+      return null;
+    }
+
+    // Skip the numberTooSmallMessage if it's below the minimum and no value is entered
+    const parsedValue = Number(value);
+    if (parsedValue < min) {
+      // Skip validation if value is too small and invalid
+      return null;  // Don't return numberTooSmallMessage here
+    }
+
+    // If value exceeds the maximum, return the "too big" message
+    if (parsedValue > max) {
+      return numberTooBigMessage;
+    }
+
+    return null;
   };
 
   return (
