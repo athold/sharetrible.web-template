@@ -62,21 +62,21 @@ const RedirectToLandingPage = () => <NamedRedirect name="LandingPage" />;
 // Our routes are exact by default.
 // See behaviour from Routes.js where Route is created.
 const routeConfiguration = (layoutConfig, accessControlConfig) => {
-  const SearchPage = layoutConfig.searchPage?.variantType === 'map' 
-    ? SearchPageWithMap 
+  const SearchPage = layoutConfig.searchPage?.variantType === 'map'
+    ? SearchPageWithMap
     : SearchPageWithGrid;
-  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel' 
-    ? ListingPageCarousel 
+  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel'
+    ? ListingPageCarousel
     : ListingPageCoverPhoto;
 
   const isPrivateMarketplace = accessControlConfig?.marketplace?.private === true;
   const authForPrivateMarketplace = isPrivateMarketplace ? { auth: true } : {};
-  
+
   return [
     {
       path: '/',
       name: 'LandingPage',
-      component: LandingPage,
+      component: SearchPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
     },
     {
@@ -88,10 +88,10 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.
     {
-      path: '/s',
+      path: '/verslo-vertinimas',
       name: 'SearchPage',
       ...authForPrivateMarketplace,
-      component: SearchPage,
+      component: LandingPage,
       loadData: pageDataLoadingAPI.SearchPage.loadData,
     },
     {
@@ -381,7 +381,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     {
       path: '/reset-password',
       name: 'PasswordResetPage',
-      component: PasswordResetPage ,
+      component: PasswordResetPage,
     },
 
     // Do not change this path!
@@ -401,7 +401,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     {
       path: '/preview',
       name: 'PreviewResolverPage',
-      component: PreviewResolverPage ,
+      component: PreviewResolverPage,
     },
   ];
 };
