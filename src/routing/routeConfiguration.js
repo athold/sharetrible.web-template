@@ -75,8 +75,15 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   return [
     {
       path: '/',
-      name: 'LandingPage',
+      name: 'SearchPage',
+      ...authForPrivateMarketplace,
       component: SearchPage,
+      loadData: pageDataLoadingAPI.SearchPage.loadData,
+    },
+    {
+      path: '/verslo-vertinimas',
+      name: 'LandingPage',
+      component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
     },
     {
@@ -87,13 +94,6 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     },
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.
-    {
-      path: '/verslo-vertinimas',
-      name: 'SearchPage',
-      ...authForPrivateMarketplace,
-      component: LandingPage,
-      loadData: pageDataLoadingAPI.SearchPage.loadData,
-    },
     {
       path: '/l',
       name: 'ListingBasePage',
