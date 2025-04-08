@@ -247,7 +247,12 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const datesMaybe = datesSearchParams(dates);
   const stockMaybe = stockFilters(datesMaybe);
   const seatsMaybe = seatsSearchParams(seats, datesMaybe);
-  const sortMaybe = sort === config.search.sortConfig.relevanceKey ? {} : { sort };
+  const sortMaybe =
+    sort === config.search.sortConfig.relevanceKey
+      ? {}
+      : sort
+        ? { sort: `meta_promoted,${sort}` }
+        : { sort: 'meta_promoted,createdAt' };
 
   const params = {
     // The rest of the params except invalid nested category-related params
